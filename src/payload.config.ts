@@ -7,6 +7,11 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+// Sino te funcionan las importaciones de las colecciones y por tanto no se puede generar el tipo de los datos con "npm run generate:types"
+// 1º Modifica el package.json y añade "type": "module"
+// 2º Modifica el tsconfig.json y añade "module": "esnext"
+// 3º Modifica el tsconfig.json y añade "moduleResolution": "bundler"
+
 import  { Users }  from './collections/Users'
 import  { Media } from './collections/Media'
 import  { Categories } from './collections/Categories'
