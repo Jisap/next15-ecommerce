@@ -1,4 +1,5 @@
 import { Category } from "@/payload-types";
+import Link from "next/link";
 
 interface SubcategoryMenuProps {
   category: Category; // TODO: Cambiar esto
@@ -31,9 +32,17 @@ const SubcategoryMenu = ({ category, isOpen, position }: SubcategoryMenuProps) =
             backgroundColor
           }}  
         >
-          <p>
-            Subcategory menu
-          </p>
+          <div>
+            {category.subcategories?.map((subcategory: Category) => (
+              <Link 
+                key={subcategory.slug} 
+                href="/" 
+                className="w-full text-left p-4 hover:bg-black hover:text-white flex justify-between items-center underline font-medium"
+              >
+                {subcategory.name}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     )
