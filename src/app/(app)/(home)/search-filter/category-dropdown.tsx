@@ -42,7 +42,7 @@ const CategoryDropdown = ({ category, isActive, isNavigatioHovered }: Props) => 
         <Button 
           variant="elevated"
           className={cn(
-            "h-11 px-4 bg-transparent rounded-full hover:bg-white hover:border-primary text-black",
+            "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
             isActive && !isNavigatioHovered && "bg-white border-primary",
           )}
         >
