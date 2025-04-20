@@ -4,7 +4,7 @@ import config from "@payload-config"
 // He tenido que modificar el proceso de seeding porque el script no me funcionaba.
 // Para ello he tenido que instalar dotenv-cli y tsx.
 // tsx Ejecuta directamente tu archivo TypeScript (src/seed.ts), manejando la compilación y la ejecución en un entorno de Módulos ES ("type": "module") de forma sencilla. También resuelve los alias de ruta (como @payload-config) definidos en tu tsconfig.json.
-// dotenv-cli Carga las variables de entorno definidas en tu archivo .env (como PAYLOAD_SECRET y tu conexión a la base de datos) y las hace disponibles para el proceso que ejecuta a continuación.
+// dotenv-cli Carga las variables de entorno definidas en tu archivo .env (como PAYLOAD_SECRET y la conexión a la base de datos) y las hace disponibles para el proceso que ejecuta a continuación.
 
 
 const categories = [
@@ -218,6 +218,11 @@ const seed = async () => {
   }
 }
 
-await seed();
-
-process.exit(0);
+try {
+  await seed();
+  console.log('Seeding completed successfully.');
+  process.exit(0);
+} catch (error) {
+  console.error('Seeding failed:', error);
+  process.exit(1);
+}
