@@ -1,8 +1,9 @@
 import { Category } from "@/payload-types";
 import Link from "next/link";
+import { CustomCategory } from "../types";
 
 interface SubcategoryMenuProps {
-  category: Category; // TODO: Cambiar esto
+  category: CustomCategory; // TODO: Cambiar esto
   isOpen: boolean;
   position: { top: number, left: number };
 }
@@ -10,11 +11,13 @@ interface SubcategoryMenuProps {
 
 const SubcategoryMenu = ({ category, isOpen, position }: SubcategoryMenuProps) => {
  
-    if(!isOpen || !category.subcategories || category.subcategories.length === 0) {
+  if (
+    !isOpen || 
+    !category.subcategories || category.subCategories.length === 0) {              // Si no está abierto (isOpen es false) O no hay subcategorías, no renderiza NADA.
       return null;
     }
 
-    const backgroundColor = category.color || "#F5F5F5";
+  const backgroundColor = category.color || "#F5F5F5";                           // Si isOpen es true Y hay subcategorías, continúa y renderiza el menú...
 
     return (
       <div 
@@ -33,7 +36,7 @@ const SubcategoryMenu = ({ category, isOpen, position }: SubcategoryMenuProps) =
           }}  
         >
           <div>
-            {category.subcategories?.map((subcategory: Category) => (
+            {category.subCategories?.map((subcategory: Category) => (
               <Link 
                 key={subcategory.slug} 
                 href="/" 

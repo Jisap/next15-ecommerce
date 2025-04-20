@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import { Navbar } from "./Navbar";
 import SearchFilters from "./search-filter";
 import { Category } from '@/payload-types';
+import { CustomCategory } from './types';
 
 
 
@@ -30,9 +31,9 @@ const Layout = async ({ children }: Props) => {
     },
   });
 
-  const formattedData = data.docs.map((doc) => ({
+  const formattedData:CustomCategory[] = data.docs.map((doc) => ({
     ...doc,
-    subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
+    subCategories: (doc.subcategories?.docs ?? []).map((doc) => ({
       ...(doc as Category),      // Se hace esto porque depth: 1 no devuelve el tipo correcto
       subcategories: undefined,  // No se hace populate de las subcategories aninadas debido a depth: 1 
     }))
