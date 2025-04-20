@@ -13,7 +13,7 @@ const SubcategoryMenu = ({ category, isOpen, position }: SubcategoryMenuProps) =
  
   if (
     !isOpen || 
-    !category.subcategories || category.subCategories.length === 0) {              // Si no está abierto (isOpen es false) O no hay subcategorías, no renderiza NADA.
+    !category.subcategories || category.subcategories.length === 0) {              // Si no está abierto (isOpen es false) O no hay subcategorías, no renderiza NADA.
       return null;
     }
 
@@ -36,7 +36,7 @@ const SubcategoryMenu = ({ category, isOpen, position }: SubcategoryMenuProps) =
           }}  
         >
           <div>
-            {category.subCategories?.map((subcategory: Category) => (
+            {category.subcategories.map((subcategory: Category) => (
               <Link 
                 key={subcategory.slug} 
                 href="/" 

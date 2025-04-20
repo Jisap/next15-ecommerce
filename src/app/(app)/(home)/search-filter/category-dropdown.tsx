@@ -21,7 +21,7 @@ const CategoryDropdown = ({ category, isActive, isNavigatioHovered }: Props) => 
   const { getDropdownPosition } = UseDropdownPosition(dropdownRef);
 
   const onMouseEnter = () => {
-    if(category.subcategories){
+    if (category.subcategories && category.subcategories.length > 0) {
       setIsOpen(true);
     }
   };
@@ -52,7 +52,7 @@ const CategoryDropdown = ({ category, isActive, isNavigatioHovered }: Props) => 
         </Button>
 
         {/* Triangulo que indica el desplegable se muestra cuando hay subcategories y isOpen es true */}
-        {category.subCategories && category.subCategories.length > 0 && (
+        {category.subcategories && category.subcategories.length > 0 && (
           <div className={cn(
             "opacity-0 absolute -botton-3 w-0 h-0 border-l-[10px] border-r-[10px]  border-b-[10px] border-l-transparent border-r-transparent border-b-black left-1/2 -translate-x-1/2",
             isOpen && "opacity-100",

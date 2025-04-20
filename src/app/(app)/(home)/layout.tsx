@@ -33,7 +33,7 @@ const Layout = async ({ children }: Props) => {
 
   const formattedData:CustomCategory[] = data.docs.map((doc) => ({
     ...doc,
-    subCategories: (doc.subcategories?.docs ?? []).map((doc) => ({
+    subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
       ...(doc as Category),      // Se hace esto porque depth: 1 no devuelve el tipo correcto
       subcategories: undefined,  // No se hace populate de las subcategories aninadas debido a depth: 1 
     }))
