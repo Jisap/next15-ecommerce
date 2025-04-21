@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { set } from "date-fns";
 
 
 interface Props {
@@ -51,6 +52,16 @@ const CategoriesSidebar = ({ open, onOpenChange, data }: Props) => {
     }
   }
 
+  const backgroundColor = selectedCategory?.color || "white";   
+  
+  const handleBackClick = () => {
+    if(parentCategories){
+      setParentCategories(null);
+      setSelectedCategory(null);
+    }
+    
+  }
+
   return (
     <Sheet
       open={open}
@@ -59,7 +70,7 @@ const CategoriesSidebar = ({ open, onOpenChange, data }: Props) => {
       <SheetContent
         side="left"
         className="p-0 transition-none"
-        style={{ backgroundColor: "white" }}
+        style={{ backgroundColor }}
       >
         <SheetHeader className="p-4 border-b">
           <SheetTitle>
@@ -71,10 +82,7 @@ const CategoriesSidebar = ({ open, onOpenChange, data }: Props) => {
           {/* Se muestra el botón "Back" solo si hay subcategorias y estas se estan mostrando */}
           {parentCategories && (
             <button
-              onClick={() => {
-                setParentCategories(null);
-                setSelectedCategory(null);
-              }}
+              onClick={ handleBackClick }
               className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium"
             >
               <ChevronLeftIcon className="size-4 mr-2 cursor-pointer" />
