@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ListFilterIcon } from "lucide-react";
+import CategoriesSidebar from "./categories-sidebar";
 
 interface CategoriesProps {
   data: CustomCategory[];
@@ -21,9 +22,9 @@ const Categories = ({ data }: CategoriesProps) => {
   const [isAnyHovered, setIsAnyHovered] = useState(false);            // si el mouse está sobre las categorías.
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);      
 
-  const activeCategory = "all"
-  const activeCategoryIndex = data.findIndex((cat) => cat.slug === activeCategory);                   // se busca la posición de la categoría activa dentro del array data.
-  const isActiveCategoryHidden = activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;   // Devuelve true si El índice de la categoría activa está más allá del número de categorías visibles 
+  const activeCategory = "all"                                                                        // Se define una categoría mock hasta implementar la funcional
+  const activeCategoryIndex = data.findIndex((cat) => cat.slug === activeCategory);                   // Se busca la posición de la categoría activa dentro del array data.
+  const isActiveCategoryHidden = activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;   // Devuelve true si El índice de la categoría activa está más allá del número de categorías visibles -> se usa para determinar si el botón "View All" debe cambiar su forma de mostrarse para indicar que hay categorías ocultas.
 
   // Este efecto se encarga de calcular cuántas categorías caben horizontalmente en el contenedor 
   // antes de que el botón "View All" quede fuera de lugar.Así, 
@@ -64,6 +65,13 @@ const Categories = ({ data }: CategoriesProps) => {
 
   return (
     <div className="relative w-full">
+      {/* Categories sidebar */}
+      <CategoriesSidebar 
+        open={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+        data={data}
+      />
+
       {/* hidden items */}
       <div 
         ref={measureRef}
@@ -102,8 +110,9 @@ const Categories = ({ data }: CategoriesProps) => {
           <Button
              className={cn(
               "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
-              isActiveCategoryHidden && !isAnyHovered && "bg-white border-primary"
+              isActiveCategoryHidden && !isAnyHovered && "bg-red-700 border-primary"
             )}
+            onClick={() => setIsSidebarOpen(true)}
           >
             View All
             <ListFilterIcon />
