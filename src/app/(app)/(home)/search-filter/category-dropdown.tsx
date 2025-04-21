@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import UseDropdownPosition from "./use-dropdown-position";
 import SubcategoryMenu from "./subcategory-menu";
 import { CustomCategory } from "../types";
+import Link from "next/link";
 
 interface Props {
   category: CustomCategory;
@@ -31,12 +32,20 @@ const CategoryDropdown = ({ category, isActive, isNavigatioHovered }: Props) => 
 
   const dropdownPosition = getDropdownPosition();
 
+  // TODO: Implement this later
+  // const toggleDropdown = () => {
+  //   if(category.subcategories?.docs?.length){
+  //     setIsOpen(!isOpen);
+  //   }
+  // }
+
   return (
     <div 
       className="relative"
       ref={dropdownRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      //onClick={toggleDropdown}
     >
       <div className="relative">
         <Button 
@@ -47,7 +56,10 @@ const CategoryDropdown = ({ category, isActive, isNavigatioHovered }: Props) => 
             isOpen && "bg-white border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-x-[4px] -translate-y-[4px]"
           )}
         >
-          {category.name}
+          {/*  Se desactiva el boton "all" porque se esta la pag ppal y ya muestra todas las categorías, el resto funciona normal */}
+          <Link href={`/${category.slug == 'all' ? '' : category.slug}`}>
+            {category.name}
+          </Link>
         </Button>
 
         {/* Triangulo que indica el desplegable se muestra cuando hay subcategories y isOpen es true */}
