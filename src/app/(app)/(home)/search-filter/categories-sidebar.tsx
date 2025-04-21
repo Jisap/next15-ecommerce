@@ -2,13 +2,13 @@ import { CustomCategory } from "../types";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
-
+import { useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 interface Props {
@@ -18,10 +18,43 @@ interface Props {
 }
 
 const CategoriesSidebar = ({ open, onOpenChange, data }: Props) => {
+
+  const router = useRouter();
+
+  const [parentCategories, setParentCategories] = useState<CustomCategory[] | null>(null); // Subcategorias
+  const [selectedCategory, setSelectedCategory] = useState<CustomCategory | null>(null);
+
+  const currentCategories = parentCategories ?? data ?? []; // Si existe parentCategories se asigna ese valor sino data y sino existe data se asigna []
+
+  const handleOpenChange = (open: boolean) => {
+    setSelectedCategory(null);
+    setParentCategories(null);
+    onOpenChange(open);
+  }
+
+  const handleCategoryClick = (category: CustomCategory) => () => {
+    if(category.subcategories && category.subcategories.length > 0){    // Si la categoría tiene subcategorias
+      setParentCategories(category.subcategories as CustomCategory[]);  // Guarda subcategorías en parentCategorias = currentCategories y asi se actualiza la vista    
+      setSelectedCategory(category);
+    }else {                                                             // Si la categoría no tiene subcategorias, estamos viendo subcatagorias de una subcategoria
+      if (parentCategories && selectedCategory) {                       // seleccionamos subcategoria 
+        router.push(`/${selectedCategory.slug}/${category.slug}`);      // se navega a la subcategoria
+      }else{
+        if (category.slug === "all") {                                  // La categoría NO tiene subcategorías Y estamos en el nivel principal
+          router.push("/");                                             // se navega a la página principal
+        }else{
+          router.push(`/${category.slug}`);                             // Si no estamos en "all" se navega a la categoría
+        }
+      }
+
+      handleOpenChange(false)
+    }
+  }
+
   return (
     <Sheet
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
     >
       <SheetContent
         side="left"
@@ -33,6 +66,36 @@ const CategoriesSidebar = ({ open, onOpenChange, data }: Props) => {
             Categories
           </SheetTitle>
         </SheetHeader>
+
+        <ScrollArea className="flex flex-col overflow-y-auto h-full pb-2">
+          {/* Se muestra el botón "Back" solo si hay subcategorias y estas se estan mostrando */}
+          {parentCategories && (
+            <button
+              onClick={() => {
+                setParentCategories(null);
+                setSelectedCategory(null);
+              }}
+              className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium"
+            >
+              <ChevronLeftIcon className="size-4 mr-2 cursor-pointer" />
+              Back
+            </button>
+          )}
+
+          {/* currentCategories determina que categorías se muestran en el sidebar y depende de handleCategoryClick */}
+          {currentCategories.map((category) => (
+            <button
+              key={category.slug}
+              onClick={handleCategoryClick(category)}
+              className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center justify-between text-base font-medium cursor-pointer"
+            >
+              {category.name}
+              {category.subcategories && category.subcategories.length > 0 && (
+                <ChevronRightIcon className="size-4"/>
+              )}
+            </button>
+          ))}
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   )
