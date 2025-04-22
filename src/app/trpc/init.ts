@@ -5,7 +5,7 @@ export const createTRPCContext = cache(async () => {          // Se crea un cont
   return { userId: 'user_123' };
 });
 
-const t = initTRPC.create({                                   // Instancia tRPC.
+const t = initTRPC.create({                                   // Instancia tRPC -> crea createTRPCRouter que sirve para crear rutas trcp en _app
   
 });
 
