@@ -13,7 +13,7 @@ export default function Home() {
   
   return (
     <div className="p-4">
-      <p>is loading: {categories.isLoading}</p>
+      <p>is loading: {`${categories.isLoading}`}</p>
      {JSON.stringify(categories.data, null, 2)}
     </div>
   );
