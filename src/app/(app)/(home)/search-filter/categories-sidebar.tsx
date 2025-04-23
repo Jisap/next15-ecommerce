@@ -9,16 +9,19 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { set } from "date-fns";
+import { useTRPC } from "@/app/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: CustomCategory[]; // TODO: Remove this later
 }
 
-const CategoriesSidebar = ({ open, onOpenChange, data }: Props) => {
+const CategoriesSidebar = ({ open, onOpenChange }: Props) => {
+
+  const trpc = useTRPC();
+  const { data } = useQuery(trpc.categories.getMany.queryOptions()); // Petición de datos en el router categories que llama al procedimiento getMany. Se usan los datos de la precarga pero sino existiera se haría una petición nueva.
 
   const router = useRouter();
 

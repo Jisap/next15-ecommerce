@@ -69,7 +69,6 @@ const Categories = ({ data }: CategoriesProps) => {
       <CategoriesSidebar 
         open={isSidebarOpen}
         onOpenChange={setIsSidebarOpen}
-        data={data}
       />
 
       {/* hidden items */}
