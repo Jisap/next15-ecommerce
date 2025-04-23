@@ -41,11 +41,7 @@ function getUrl() {
 
 
 // Proveedor de tRPC + React Query
-export function TRPCReactProvider(
-  props: Readonly<{
-    children: React.ReactNode;
-  }>,
-) {
+export function TRPCReactProvider( props: Readonly<{children: React.ReactNode}>) {
   
   const queryClient = getQueryClient();                                    // Crea un nuevo QueryClient en el servidor (SSR). Reutiliza uno ya existente en el cliente, si ya fue creado. Se usa para que React Query tenga una sola fuente de verdad del estado de los datos.
   
