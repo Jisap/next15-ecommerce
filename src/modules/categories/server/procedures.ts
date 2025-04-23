@@ -10,7 +10,7 @@ export const categoriesRouter = createTRPCRouter({
   getMany: baseProcedure.query(async ({ ctx }) => { // Este procedimiento recibe el ctx de trpc que contiene la instancia de payload
 
 
-    const data = await ctx.payload.find({           // La consulta es a Payload
+    const data = await ctx.db.find({                // La consulta es a Payload
       collection: "categories",
       depth: 1,
       pagination: false,

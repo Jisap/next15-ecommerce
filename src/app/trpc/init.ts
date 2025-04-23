@@ -24,5 +24,5 @@ export const createCallerFactory = t.createCallerFactory;     // "llamador" (cal
 
 export const baseProcedure = t.procedure.use(async({ next }) => { 
   const payload = await getPayload({ config })                    // Instancia de payload
-  return next({ ctx: { payload }})                                // Añadimos la instancia al contexto de trpc
+  return next({ ctx: { db: payload }})                            // Añadimos la instancia al contexto de trpc
 })                     
