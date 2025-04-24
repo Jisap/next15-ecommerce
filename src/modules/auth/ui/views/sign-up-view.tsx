@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { registerSchema } from '../../../../app/(app)/(auth)/schemas';
+import { registerSchema } from '../../schemas';
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useTRPC } from "@/app/trpc/client"

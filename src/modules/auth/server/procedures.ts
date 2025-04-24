@@ -1,9 +1,10 @@
 import { baseProcedure, createTRPCRouter } from "@/app/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { headers as getHeaders, cookies as getCookies } from "next/headers";
-import { z } from "zod";
 import { AUTH_COOKIE } from "../constants";
-import { registerSchema } from "@/app/(app)/(auth)/schemas";
+import { loginSchema, registerSchema } from "../schemas";
+
+
 
 
 export const authRouter = createTRPCRouter({
@@ -75,12 +76,7 @@ export const authRouter = createTRPCRouter({
     }),
 
   login: baseProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        password: z.string(),
-      })
-    )
+    .input( loginSchema )
     .mutation(async ({ input, ctx }) => {
       const data = await ctx.db.login({
         collection: "users",
