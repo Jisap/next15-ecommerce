@@ -1,8 +1,8 @@
 
 
 import { baseProcedure, createTRPCRouter } from "@/app/trpc/init";
-import { CustomCategory } from "@/app/(app)/(home)/types";
 import { Category } from "@/payload-types";
+import { CategoriesGetManyOutput } from "../types";
 
 
 export const categoriesRouter = createTRPCRouter({
@@ -22,7 +22,7 @@ export const categoriesRouter = createTRPCRouter({
       sort: "name"
     });
 
-    const formattedData: CustomCategory[] = data.docs.map((doc) => ({
+    const formattedData = data.docs.map((doc) => ({
       ...doc,
       subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
         ...(doc as Category),      // Se hace esto porque depth: 1 no devuelve el tipo correcto

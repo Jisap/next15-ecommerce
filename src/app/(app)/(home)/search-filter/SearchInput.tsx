@@ -2,7 +2,6 @@
 
 import { Input } from "@/components/ui/input";
 import { List, ListFilterIcon, SearchIcon } from "lucide-react";
-import { CustomCategory } from "../types";
 import CategoriesSidebar from "./categories-sidebar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";

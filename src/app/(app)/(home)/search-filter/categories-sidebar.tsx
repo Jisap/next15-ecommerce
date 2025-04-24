@@ -1,4 +1,4 @@
-import { CustomCategory } from "../types";
+
 import {
   Sheet,
   SheetContent,
@@ -11,6 +11,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTRPC } from "@/app/trpc/client";
 import { useQuery } from "@tanstack/react-query";
+import { CategoriesGetManyOutput, CategoriesGetManyOutputSingle } from "@/modules/categories/types";
 
 
 interface Props {
@@ -25,8 +26,8 @@ const CategoriesSidebar = ({ open, onOpenChange }: Props) => {
 
   const router = useRouter();
 
-  const [parentCategories, setParentCategories] = useState<CustomCategory[] | null>(null); // Subcategorias
-  const [selectedCategory, setSelectedCategory] = useState<CustomCategory | null>(null);
+  const [parentCategories, setParentCategories] = useState<CategoriesGetManyOutput | null>(null); // Subcategorias
+  const [selectedCategory, setSelectedCategory] = useState<CategoriesGetManyOutput[1] | null>(null);
 
   const currentCategories = parentCategories ?? data ?? []; // Si existe parentCategories se asigna ese valor sino data y sino existe data se asigna []
 
@@ -36,9 +37,9 @@ const CategoriesSidebar = ({ open, onOpenChange }: Props) => {
     onOpenChange(open);
   }
 
-  const handleCategoryClick = (category: CustomCategory) => () => {
+  const handleCategoryClick = (category: CategoriesGetManyOutput[1]) => () => {
     if(category.subcategories && category.subcategories.length > 0){    // Si la categoría tiene subcategorias
-      setParentCategories(category.subcategories as CustomCategory[]);  // Guarda subcategorías en parentCategorias = currentCategories y asi se actualiza la vista    
+      setParentCategories(category.subcategories as CategoriesGetManyOutput);  // Guarda subcategorías en parentCategorias = currentCategories y asi se actualiza la vista    
       setSelectedCategory(category);
     }else {                                                             // Si la categoría no tiene subcategorias, estamos viendo subcatagorias de una subcategoria
       if (parentCategories && selectedCategory) {                       // seleccionamos subcategoria 
