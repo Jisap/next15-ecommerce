@@ -21,6 +21,25 @@ export const authRouter = createTRPCRouter({
     // Validación del input usando Zod
     .input(registerSchema)
     .mutation( async ({ input, ctx }) => {
+      
+      const existingData = await ctx.db.find({
+        collection: "users",
+        limit: 1,
+        where: {
+          username: {
+            equals: input.username
+          }
+        }
+      })
+
+      const existingUser = existingData.docs[0]
+      if(existingUser) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Username already exists",
+        })
+      }
+
       await ctx.db.create({                         // 1. Se crea un nuevo usuario en la colección 'users' 
         collection: "users",
         data: {

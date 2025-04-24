@@ -19,13 +19,33 @@ import { Input } from "@/components/ui/input"
 import { registerSchema } from '../../../../app/(app)/(auth)/schemas';
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useTRPC } from "@/app/trpc/client"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+
+
+
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["700"],
 });
 
+
 export const SignUpView = () => {
+
+  const router = useRouter();
+
+  const trpc = useTRPC();
+  const register = useMutation(trpc.auth.register.mutationOptions({
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      router.push("/")
+    }
+  }))
 
   const form = useForm<z.infer<typeof registerSchema>>({
     mode: "all",
@@ -38,7 +58,7 @@ export const SignUpView = () => {
   });
 
   const onSubmit = (values: z.infer<typeof registerSchema>) => {
-    console.log(values);
+    register.mutate(values)
   }
 
   // temporal
@@ -128,6 +148,7 @@ export const SignUpView = () => {
               type="submit"
               size="lg"
               variant="elevated"
+              disabled={register.isPending}
               className="bg-black text-white hover:bg-pink-400 hover:text-primary"
             >
               Create account
