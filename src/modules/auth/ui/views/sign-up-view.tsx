@@ -28,6 +28,7 @@ const poppins = Poppins({
 export const SignUpView = () => {
 
   const form = useForm<z.infer<typeof registerSchema>>({
+    mode: "all",
     resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
@@ -40,6 +41,10 @@ export const SignUpView = () => {
     console.log(values);
   }
 
+  // temporal
+  const username = form.watch("username"); // Obtenemos el valor del campo username
+  const usernamErrors = form.formState.errors.username; // Obtenemos los errores del campo username
+  const showPreview = username && !usernamErrors; // Mostramos el botón "Preview" solo si el usuario ingresó un nombre de usuario válido
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-5'>
@@ -58,7 +63,75 @@ export const SignUpView = () => {
                   funroad
                 </span>
               </Link>
+
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="text-base border-none underline"
+              >
+                <Link prefetch href="/sign-in">
+                  Sign in
+                </Link>
+              </Button>
             </div>
+
+            <h1 className="text-4xl font-medium">
+              Join over 1000 creators earning money on Funroad
+            </h1>
+
+            <FormField 
+              name="username"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel className="text-base">Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription className={cn("hidden", showPreview && "block")}>
+                    Your store will be available at&nbsp;
+                    {/* TODO: use proper method to generate preview url */}
+                    <strong>{username}</strong>.shop.com
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">Password</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              size="lg"
+              variant="elevated"
+              className="bg-black text-white hover:bg-pink-400 hover:text-primary"
+            >
+              Create account
+            </Button>
           </form>
         </Form>
       </div>
