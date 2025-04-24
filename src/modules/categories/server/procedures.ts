@@ -2,7 +2,7 @@
 
 import { baseProcedure, createTRPCRouter } from "@/app/trpc/init";
 import { Category } from "@/payload-types";
-import { CategoriesGetManyOutput } from "../types";
+
 
 
 export const categoriesRouter = createTRPCRouter({

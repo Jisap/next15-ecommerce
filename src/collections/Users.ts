@@ -5,10 +5,14 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
   },
-  auth: true,
+  auth: true, // ← esto activa la autenticación y el manejo de tokens
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: "username",
+      required: true,
+      unique: true,
+      type: "text",
+    },
   ],
 }
 
