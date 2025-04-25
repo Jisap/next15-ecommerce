@@ -111,7 +111,8 @@ const Categories = ({ data }: CategoriesProps) => {
 
         <div ref={viewAllRef} className="shrink-0">
           <Button
-             className={cn(
+            variant="elevated"
+            className={cn(
               "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
               isActiveCategoryHidden && !isAnyHovered && "bg-red-700 border-primary"
             )}
