@@ -7,12 +7,16 @@ import { cn } from "@/lib/utils";
 import { ListFilterIcon } from "lucide-react";
 import CategoriesSidebar from "./categories-sidebar";
 import { CategoriesGetManyOutput } from "@/modules/categories/types";
+import { useParams } from "next/navigation";
 
 interface CategoriesProps {
   data: CategoriesGetManyOutput;
 }
 
 const Categories = ({ data }: CategoriesProps) => {
+
+  const params = useParams()
+  const categoryParam = params.category as string | undefined;
 
   const containerRef = useRef<HTMLDivElement>(null);                  // referencia al contenedor visible de las categorías.
   const measureRef = useRef<HTMLDivElement>(null);                    // ref al contenedor invisible que se usa para medir el ancho de cada categoría.
@@ -22,7 +26,7 @@ const Categories = ({ data }: CategoriesProps) => {
   const [isAnyHovered, setIsAnyHovered] = useState(false);            // si el mouse está sobre las categorías.
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);      
 
-  const activeCategory = "all"                                                                        // Se define una categoría mock hasta implementar la funcional
+  const activeCategory = categoryParam || "all";                                                                      // Se define una categoría mock hasta implementar la funcional
   const activeCategoryIndex = data.findIndex((cat) => cat.slug === activeCategory);                   // Se busca la posición de la categoría activa dentro del array data.
   const isActiveCategoryHidden = activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;   // Devuelve true si El índice de la categoría activa está más allá del número de categorías visibles -> se usa para determinar si el botón "View All" debe cambiar su forma de mostrarse para indicar que hay categorías ocultas.
 
