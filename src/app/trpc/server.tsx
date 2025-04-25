@@ -8,11 +8,13 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 export const getQueryClient = cache(makeQueryClient);
 
-export const trpc = createTRPCOptionsProxy({
+export const trpc = createTRPCOptionsProxy({  
   ctx: createTRPCContext,
   router: appRouter,
   queryClient: getQueryClient,
 });
+
+export const caller = appRouter.createCaller(createTRPCContext);  // Permite invocar procedimientos directamente desde el server
 
 
 export function HydrateClient( props: { children: React.ReactNode }) {

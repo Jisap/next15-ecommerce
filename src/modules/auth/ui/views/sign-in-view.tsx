@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,7 +18,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useTRPC } from "@/app/trpc/client"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { loginSchema } from "../../schemas"
@@ -36,16 +35,46 @@ const poppins = Poppins({
 export const SignInView = () => {
 
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const trpc = useTRPC();
   const login = useMutation(trpc.auth.login.mutationOptions({
     onError: (error) => {
       toast.error(error.message)
     },
-    onSuccess: () => {
+    onSuccess: async() => {
+      // Invalidamos la consulta de sesión. Los datos almacenados en caché para esa consulta ya no son válidos y necesitan ser refrescados.
+      // Se vuelva a ejecutar automáticamente la consulta auth.session -> Se actualicen todos los componentes que dependen de esta información
+      await queryClient.invalidateQueries(trpc.auth.session.queryFilter()); // 
       router.push("/")
     }
   }))
+
+  // METODO ALTERNATIVO DE LOGIN
+  // const login = useMutation({
+  //   mutationFn: async(values: z.infer<typeof loginSchema>) => {    // Usaremos este método solo con login porque en register hay que comprobar si existe el usuario
+  //     const response = await fetch("/api/users/login", {           // Al crear una colleción de users en payload se generán automáticamente las rutas de autenticación
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(values),
+  //     })
+
+  //     if(!response.ok) {
+  //       const error = await response.json()
+  //       throw new Error(error.message ||"Failed to login")
+  //     }
+
+  //     return response.json()
+  //   },
+  //   onError: (error) => {
+  //     toast.error(error.message)
+  //   },
+  //   onSuccess: () => {
+  //     router.push("/")
+  //   }
+  // })
 
   const form = useForm<z.infer<typeof loginSchema>>({
     mode: "all",

@@ -1,8 +1,8 @@
 import { baseProcedure, createTRPCRouter } from "@/app/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { headers as getHeaders, cookies as getCookies } from "next/headers";
-import { AUTH_COOKIE } from "../constants";
+import { headers as getHeaders } from "next/headers";
 import { loginSchema, registerSchema } from "../schemas";
+import { generateAuthCookie } from "../utils";
 
 
 
@@ -33,7 +33,7 @@ export const authRouter = createTRPCRouter({
         }
       })
 
-      const existingUser = existingData.docs[0]
+      const existingUser = existingData.docs[0]     // Se verifica si el usuario ya existe
       if(existingUser) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -65,13 +65,10 @@ export const authRouter = createTRPCRouter({
         })
       }
 
-      const cookies = await getCookies();           // 4. Si se recibe el token correctamente, se guarda en una cookie HTTP-only
-      cookies.set({
-        name: AUTH_COOKIE,
+
+      await generateAuthCookie({                    // 4. Inicializamos el objeto cookies
+        prefix: ctx.db.config.cookiePrefix,         // Si se recibe el token correctamente, se guarda en una cookie HTTP-only
         value: data.token,
-        httpOnly: true,
-        path: "/",
-        //TODO: Ensure cross-domain cookie sharing
       })
     }),
 
@@ -93,21 +90,13 @@ export const authRouter = createTRPCRouter({
         })
       }
 
-      const cookies = await getCookies();
-      cookies.set({
-        name: AUTH_COOKIE,
+      await generateAuthCookie({
+        prefix: ctx.db.config.cookiePrefix,
         value: data.token,
-        httpOnly: true,
-        path: "/",
-        //TODO: Ensure cross-domain cookie sharing
       })
 
       return data
     }),
 
-  logout: baseProcedure.mutation(async () => {
-    const cookies = await getCookies();
-    cookies.delete(AUTH_COOKIE);
-  })
-
+  
 })
