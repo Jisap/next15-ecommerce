@@ -11,7 +11,7 @@ export const productsRouter = createTRPCRouter({
       depth: 1,                                     // Se hace populate de "category" & "image"
     });
 
-  
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulación de una tarea de procesamiento de datos
 
     return data;
   })
