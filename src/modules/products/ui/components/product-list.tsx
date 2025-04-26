@@ -2,13 +2,19 @@
 
 import { useTRPC } from '@/app/trpc/client';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import React from 'react'
-import { Product } from '../../../../payload-types';
 
-export const ProductList = () => {
+interface Props {
+  category?: string;
+}
+
+
+
+export const ProductList = ({ category }: Props) => {
 
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.products.getMany.queryOptions())
+  const { data } = useSuspenseQuery(trpc.products.getMany.queryOptions({
+    category // este sería el input del procedimiento -> obtendriamos el valor de los productos correspondientes a la categoría
+  }))
 
   return (
     <div>
