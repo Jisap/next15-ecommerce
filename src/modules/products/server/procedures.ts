@@ -10,68 +10,69 @@ export const productsRouter = createTRPCRouter({
   getMany: baseProcedure
     .input(
       z.object({
-        category: z.string().nullable().optional(),
-        minPrice: z.string().nullable().optional(),
-        maxPrice: z.string().nullable().optional(),
+        // Define los parámetros de entrada para filtrar productos
+        category: z.string().nullable().optional(),  // Slug de la categoría para filtrar
+        minPrice: z.string().nullable().optional(),  // Precio mínimo (como string)
+        maxPrice: z.string().nullable().optional(),  // Precio máximo (como string)
       })
     )
     .query(async ({ ctx, input }) => { 
-      const where: Where = {};
+      const where: Where = {};                       // Inicializa un objeto vacío para construir las condiciones de búsqueda
 
-      if(input.minPrice) {
+      if (input.minPrice) {                          // Si se proporciona un precio mínimo, añade un filtro para productos con precio mayor o igual
         where.price = {
           greater_than_equal: input.minPrice
         }
       }
 
-      if(input.maxPrice) {
+      if (input.maxPrice) {                           // Si se proporciona un precio máximo, añade un filtro para productos con precio menor o igual
         where.price = {
           less_than_equal: input.maxPrice
         }
       }
 
-      if(input.category) {    
-        const categoriesData = await ctx.db.find({                // 1º Se busca la categoría con el slug proporcionado por el usuario
+      if (input.category) {                            // Si se proporciona un slug de categoría, construye filtros basados en la jerarquía de categorías
+        const categoriesData = await ctx.db.find({                 // 1. Busca la categoría específica por su slug
           collection: "categories",
-          limit: 1,                                               // Se limita a 1 resultado (los slugs son únicos)
-          depth: 1,                                               // Se hace populate de "subcategories"
-          pagination:false,
+          limit: 1,                                                // Solo necesitamos un resultado ya que los slugs son únicos
+          depth: 1,                                                // "Populate" las subcategorías directas (un nivel de profundidad)
+          pagination: false,                                       // No necesitamos metadatos de paginación
           where: {
             slug: {
-              equals: input.category
+              equals: input.category                               // Busca categoría con slug exacto
             }
           }
         })
 
-        const formattedData = categoriesData.docs.map((doc) => ({  // Se formatea el dato de la categoría encontrada
-          ...doc,
+        const formattedData = categoriesData.docs.map((doc) => ({  // 2. Formatea los datos de la categoría encontrada para un uso más fácil
+          ...doc,                                                  // Asegura que las subcategorías tengan el tipo correcto y estén correctamente estructuradas
           subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
-            ...(doc as Category),      // Se hace esto porque depth: 1 no devuelve el tipo correcto
-            //subcategories: undefined,  // No se hace populate de las subcategories aninadas debido a depth: 1 
+            ...(doc as Category),                                             // Fuerza el tipo Category en las subcategorías
+            //subcategories: undefined,                                       // No incluimos subcategorías anidadas más profundas
           }))
         }))
 
-        const subcategoriesSlugs = [];
-        const parentCategory = formattedData[0];                 // Se obtiene la categoría padre
+        const subcategoriesSlugs = [];                              // 3. Prepara para recolectar los slugs de todas las subcategorías directas
+        const parentCategory = formattedData[0];                    // Obtiene la categoría principal encontrada (si existe)
 
-        if(parentCategory){                                      // Si la categoría padre existe
-          subcategoriesSlugs.push(                               // Recolecta los slugs de las subcategorías DIRECTAS.
-            ...parentCategory.subcategories.map((subcategory) => subcategory.slug) // mapea las subcategorías (obtenidas por depth 1) y extrae su slugs
+        if (parentCategory) {                                       // Si se encontró la categoría solicitada
+          subcategoriesSlugs.push(                                  // Extrae los slugs de todas las subcategorías directas
+            ...parentCategory.subcategories.map((subcategory) => subcategory.slug) 
           )
 
-          where["category.slug"] = {                             // Se establece la condición de busqueda de productos basada en los slugs de las subcategorias: Busca productos cuyo slug de categoría asociada cumpla con esta condición 
-            in: [                                                // estar en la lista
-              parentCategory.slug,                               // de las categorías padre
-              ...subcategoriesSlugs                              // o de las subcategorías directas
+          where["category.slug"] = {                                // 4. Configura el filtro para buscar productos en la categoría principal O cualquiera de sus subcategorías directas. Busca productos cuyo slug de categoría asociada cumpla con esta condición 
+            in: [                                                   // estar en la lista
+              parentCategory.slug,                                  // de las categorías padre
+              ...subcategoriesSlugs                                 // o de las subcategorías directas
             ]
           }                 
         } 
       }
       
-      const data = await ctx.db.find({                           // 2º consulta a Payload
-        collection: "products",                                  // Se busca en la colección "products"
-        depth: 1,                                                // Se hace populate de "category" & "image"
-        where                                                    // Filtro: el slug de la categoría del producto debe coincidir con el de la categoría principal o cualquiera de sus subcategorías
+      const data = await ctx.db.find({                              // 5. Realiza la consulta final para obtener los productos filtrados
+        collection: "products",                                     // Se busca en la colección "products"
+        depth: 1,                                                   // Se hace populate de "category" & "image"
+        where                                                       // Aplica todos los filtros configurados (precio y/o categoría)
       })
   
       return data;
