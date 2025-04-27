@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Product } from '../../../../payload-types';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PriceFilter } from './price-filter';
 
 interface ProductFiltersProps {
   title: string;
@@ -50,7 +51,7 @@ export const ProductFilters = () => {
 
       {/* Filtros de productos */}
       <ProductFilter title="Price" className='border-b-0'>
-        <p>Price filter</p>
+        <PriceFilter />
       </ProductFilter>
     </div>
   )
