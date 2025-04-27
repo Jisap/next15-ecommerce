@@ -16,18 +16,23 @@ export const productsRouter = createTRPCRouter({
         maxPrice: z.string().nullable().optional(),  // Precio máximo (como string)
       })
     )
-    .query(async ({ ctx, input }) => { 
+    .query(async ({ ctx, input }) => {               
       const where: Where = {};                       // Inicializa un objeto vacío para construir las condiciones de búsqueda
 
-      if (input.minPrice) {                          // Si se proporciona un precio mínimo, añade un filtro para productos con precio mayor o igual
-        where.price = {
-          greater_than_equal: input.minPrice
-        }
-      }
-
-      if (input.maxPrice) {                           // Si se proporciona un precio máximo, añade un filtro para productos con precio menor o igual
-        where.price = {
+      // Se asignan los filtros de precio 
+      // al objeto where
+      if (input.minPrice && input.maxPrice) {        // Si se proporcionan ambos precios, crea un rango de precios 
+        where.price = { 
+          greater_than_equal: input.minPrice,
           less_than_equal: input.maxPrice
+        }
+      } else if (input.minPrice) {                    // Si solo se proporciona precio mínimo se asigna un filtro para productos con precio mayor o igual
+        where.price = {
+          greater_than_equal: input.minPrice,
+        }
+      } else if (input.maxPrice) {                    // Si solo se proporciona precio máximo se asigna un filtro para productos con precio menor o igual
+        where.price ={
+          less_than_equal: input.maxPrice,
         }
       }
 
