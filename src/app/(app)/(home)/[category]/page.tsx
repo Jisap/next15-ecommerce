@@ -1,24 +1,29 @@
+import type { SearchParams } from "nuqs/server";
 import { getQueryClient, trpc } from "@/app/trpc/server";
 import { ProductFilters } from "@/modules/products/ui/components/product-filters";
 import { ProductList, ProductListSkeleton } from "@/modules/products/ui/components/product-list";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
+import { loadProductFilters } from "@/modules/products/hooks/use-product-filters";
 
 
 
 interface Props {
   params: Promise<{
-    category: string
-  }>
+    category: string                           // Se reciben los params de la ruta de la URL [category]
+  }>,
+  searchParams: Promise<SearchParams>          // Se reciben los searchParams de la consulta de la URL [minPrice, maxPrice]
 }
 
-const Page = async({ params }: Props) => {
+const Page = async({ params, searchParams }: Props) => {
 
   const { category } = await params;
+  const filters = await loadProductFilters(searchParams);
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({ // Prefetch de productos con populate de category
-    category
+  void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({ // Prefetch de productos con populate de category y filtro aplicados en url
+    category,
+    ...filters
   }));
   
   return (
