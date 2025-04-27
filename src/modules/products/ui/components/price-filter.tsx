@@ -1,7 +1,8 @@
-"use client"
+
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ChangeEvent } from "react";
 
 
 interface Props {
@@ -25,8 +26,8 @@ export const formatAsCurrency = (value: string) => {                            
   return new Intl.NumberFormat('en-US', {                                       // Formatea el número como moneda USD utilizando Intl.NumberFormat
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0, // Elimina los ceros decimales
+    maximumFractionDigits: 2, // Muestra solo dos decimales
   }).format(numberValue);
 }
 
@@ -37,6 +38,17 @@ export const PriceFilter = ({
   onMinPriceChange, 
   onMaxPriceChange }: Props
 ) => {
+
+  const handleMinPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const numericValue = e.target.value.replace(/[^0-9.]/g, ''); // Extrae solo números y puntos decimales
+    onMinPriceChange?.(numericValue);
+  }
+
+  const handleMaxPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const numericValue = e.target.value.replace(/[^0-9.]/g, '');
+    onMaxPriceChange?.(numericValue);
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
@@ -48,7 +60,7 @@ export const PriceFilter = ({
           type="text"
           placeholder="$0"
           value={minPrice ? formatAsCurrency(minPrice) : ''}
-          onChange={() => {}}
+          onChange={handleMinPriceChange} // onChange -> handleMinPriceChange -> numericValue -> onMinPriceChange -> actualiza estado de minPrice -> actualiza url
         />
       </div>
 
@@ -61,7 +73,7 @@ export const PriceFilter = ({
           type="text"
           placeholder="∞"
           value={maxPrice ? formatAsCurrency(maxPrice) : ''}
-          onChange={() => { }}
+          onChange={handleMaxPriceChange}
         />
       </div>
     </div>

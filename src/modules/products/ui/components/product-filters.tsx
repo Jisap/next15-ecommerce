@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from 'react';
-import { Product } from '../../../../payload-types';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PriceFilter } from './price-filter';
+import { useProductFilters } from '../../hooks/use-product-filters';
 
 interface ProductFiltersProps {
   title: string;
@@ -13,6 +13,7 @@ interface ProductFiltersProps {
 }
 
 const ProductFilter = ({ title, className, children }: ProductFiltersProps) => {
+
   const [isOpen, setIsOpen] = useState(false);
   const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
 
@@ -35,6 +36,13 @@ const ProductFilter = ({ title, className, children }: ProductFiltersProps) => {
 }
 
 export const ProductFilters = () => {
+
+  const [filters, setFilters] = useProductFilters();                // Estado en url
+
+  const onChange = (key: keyof typeof filters, value: unknown) => { // key: es una clave (nombre de propiedad) de filters (minPrice, maxPrice) y value es el nuevo valor que queremos asignar a esa clave.
+    setFilters({ ...filters, [key]: value })                        // Toma el estado actual de filters (con ...filters) y reemplaza el valor de la clave especificada ([key]) con el nuevo value.
+  }
+
   return (
     <div className="border rounded-md bg-white">
       {/* Cabecera de filtros */}
@@ -51,7 +59,12 @@ export const ProductFilters = () => {
 
       {/* Filtros de productos */}
       <ProductFilter title="Price" className='border-b-0'>
-        <PriceFilter />
+        <PriceFilter 
+          minPrice={filters.minPrice}
+          maxPrice={filters.maxPrice}
+          onMinPriceChange={(value) => onChange('minPrice', value)}
+          onMaxPriceChange={(value) => onChange('maxPrice', value)}
+        />
       </ProductFilter>
     </div>
   )
