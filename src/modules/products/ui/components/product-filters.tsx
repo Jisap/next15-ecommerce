@@ -5,6 +5,7 @@ import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PriceFilter } from './price-filter';
 import { useProductFilters } from '../../hooks/use-product-filters';
+import { set } from 'date-fns';
 
 interface ProductFiltersProps {
   title: string;
@@ -43,6 +44,10 @@ export const ProductFilters = () => {
     setFilters({ ...filters, [key]: value })                        // Toma el estado actual de filters (con ...filters) y reemplaza el valor de la clave especificada ([key]) con el nuevo value.
   }
 
+  const onClear = () => {
+    setFilters({ minPrice: undefined, maxPrice: undefined });
+  }
+
   return (
     <div className="border rounded-md bg-white">
       {/* Cabecera de filtros */}
@@ -50,7 +55,7 @@ export const ProductFilters = () => {
         <p className="font-medium">Filters</p>
         <button 
           className="underline"
-          onClick={() => {}}
+          onClick={() => onClear()}
           type="button"  
         >
           Clear
