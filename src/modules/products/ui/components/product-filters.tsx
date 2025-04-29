@@ -49,7 +49,7 @@ export const ProductFilters = () => {
   }
 
   const onClear = () => {
-    setFilters({ minPrice: undefined, maxPrice: undefined });
+    setFilters({ minPrice: undefined, maxPrice: undefined, tags: [] });
   }
 
   const hasAnyFilters = Object.entries(filters).some(([key, value]) => {        // Verifica si hay algún filtro aplicado en la url

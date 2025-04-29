@@ -67,7 +67,7 @@ export const TagsFilter = ({ value, onChange }: TagsFilterProps) => {
         <button
           disabled={isFetchingNextPage}
           onClick={() => fetchNextPage()}
-          className="underline font-medium justify-start text-start disabled:opacity-50"
+          className="underline font-medium justify-start text-start disabled:opacity-50 cursor-pointer"
         >
           Load more...
         </button>
