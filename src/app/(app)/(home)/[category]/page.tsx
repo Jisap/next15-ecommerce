@@ -4,7 +4,8 @@ import { ProductFilters } from "@/modules/products/ui/components/product-filters
 import { ProductList, ProductListSkeleton } from "@/modules/products/ui/components/product-list";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { loadProductFilters } from "@/modules/products/hooks/use-product-filters";
+import { loadProductFilters } from "@/modules/products/search-params";
+
 
 
 
