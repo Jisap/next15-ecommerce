@@ -1,8 +1,9 @@
 
 import { baseProcedure, createTRPCRouter } from "@/app/trpc/init";
 import { Category } from "@/payload-types";
-import type { Where } from "payload";
+import type { Sort, Where } from "payload";
 import { z } from "zod";
+import { sortValues } from "../search-params";
 
 
 export const productsRouter = createTRPCRouter({
@@ -15,10 +16,25 @@ export const productsRouter = createTRPCRouter({
         minPrice: z.string().nullable().optional(),              // Precio mínimo (como string)
         maxPrice: z.string().nullable().optional(),              // Precio máximo (como string)
         tags: z.array(z.string()).nullable().optional(),         // Arreglo de slugs de etiquetas para filtrar
+        sort: z.enum(sortValues).nullable().optional(),                     // Orden de los productos
       })
     )
     .query(async ({ ctx, input }) => {               
       const where: Where = {};                       // Inicializa un objeto vacío para construir las condiciones de búsqueda
+      let sort: Sort = "-createdAt";                 // Inicializa un objeto vacío para construir el orden de los productos
+
+      if(input.sort === "curated"){
+        sort = "-createdAt";
+      }
+
+      if(input.sort === "hot_and_new"){
+        sort = "+createdAt";
+      }
+
+      if(input.sort === "trending"){
+        sort = "-createdAt";
+      }
+
 
       // Se asignan los filtros de precio 
       // al objeto where
@@ -84,7 +100,8 @@ export const productsRouter = createTRPCRouter({
       const data = await ctx.db.find({                              // 5. Realiza la consulta final para obtener los productos filtrados
         collection: "products",                                     // Se busca en la colección "products"
         depth: 1,                                                   // Se hace populate de "category" & "image"
-        where                                                       // Aplica todos los filtros configurados (precio y/o categoría)
+        where,                                                      // Aplica todos los filtros configurados (precio y/o categoría)
+        sort,
       })
   
       return data;

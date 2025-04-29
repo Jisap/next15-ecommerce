@@ -53,6 +53,13 @@ export const ProductFilters = () => {
   }
 
   const hasAnyFilters = Object.entries(filters).some(([key, value]) => {        // Verifica si hay algún filtro aplicado en la url
+   
+    if (key === 'sort') return false;                                           // El filtro de ordenamiento (sort) no se considera un filtro que el usuario quiera "limpiar" con el botón "Clear".
+   
+    if(Array.isArray(value)){                                                   // Si el valor es un array
+      return value.length > 0;                                                  // y no esta vacío el some() devolverá true sino false
+    }
+
     if(typeof value === 'string'){                                              // Si el valor es una cadena de texto
       return value !== '';                                                      // devuelve true si la cadena no esta vacía
     }
