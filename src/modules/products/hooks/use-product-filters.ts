@@ -8,15 +8,18 @@ const params = {
   minPrice: parseAsString                    // parseAsString indica a nuqs que trate como string "?minPrice=.."       
     .withOptions({
       clearOnDefault: true,                  // Si el valor por defecto es vacío, se borra la cadena de consulta    
-    }),
+    })
+    .withDefault(''),
   maxPrice: parseAsString
     .withOptions({
       clearOnDefault: true,
-    }),
+    })
+    .withDefault(''), 
   tags: parseAsArrayOf(parseAsString)        // parseAsArrayOf indica a nuqs que trate como array de strings "?tags[]=.."
     .withOptions({
       clearOnDefault: true,                  // Si el valor por defecto es vacío, se borra la cadena de consulta
-    }),
+    })
+    .withDefault([]),
 }
 
 export const useProductFilters = () => {     // nuqs gestiona el estado de la cadena de consulta en la URL

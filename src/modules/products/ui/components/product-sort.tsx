@@ -1,3 +1,4 @@
+"use client"
 
 import { Button } from '@/components/ui/button';
 import { useProductFilters } from '../../hooks/use-product-filters';

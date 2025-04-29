@@ -5,6 +5,7 @@ import { ProductList, ProductListSkeleton } from "@/modules/products/ui/componen
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { loadProductFilters } from "@/modules/products/search-params";
+import { ProductSort } from "@/modules/products/ui/components/product-sort";
 
 
 
@@ -34,7 +35,7 @@ const Page = async({ params, searchParams }: Props) => {
           <p className="text-2xl font-medium">
             Curated for you
           </p>
-          <p>SORTING</p>
+          <ProductSort />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-8 gap-y-6 gap-x-12">
