@@ -11,9 +11,10 @@ export const productsRouter = createTRPCRouter({
     .input(
       z.object({
         // Define los parámetros de entrada para filtrar productos
-        category: z.string().nullable().optional(),  // Slug de la categoría para filtrar
-        minPrice: z.string().nullable().optional(),  // Precio mínimo (como string)
-        maxPrice: z.string().nullable().optional(),  // Precio máximo (como string)
+        category: z.string().nullable().optional(),              // Slug de la categoría para filtrar
+        minPrice: z.string().nullable().optional(),              // Precio mínimo (como string)
+        maxPrice: z.string().nullable().optional(),              // Precio máximo (como string)
+        tags: z.array(z.string()).nullable().optional(),         // Arreglo de slugs de etiquetas para filtrar
       })
     )
     .query(async ({ ctx, input }) => {               
@@ -72,6 +73,12 @@ export const productsRouter = createTRPCRouter({
             ]
           }                 
         } 
+      }
+
+      if(input.tags && input.tags.length > 0) {                     // Si se proporcionan tags, crea un filtro para buscar productos que tengan al menos una de las etiquetas
+        where["tags.slug"] = {
+          in: input.tags
+        }
       }
       
       const data = await ctx.db.find({                              // 5. Realiza la consulta final para obtener los productos filtrados
