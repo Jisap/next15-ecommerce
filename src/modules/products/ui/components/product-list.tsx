@@ -9,15 +9,18 @@ interface Props {
 }
 
 
-
+// Muestra una lista de productos filtrados por categoría y filtros aplicados en url
 export const ProductList = ({ category }: Props) => {
 
-  const [filters] = useProductFilters();                // Estado en url
+  const [filters] = useProductFilters();                // Estado de filters hidratado inicialmente al cargar [category] leido desde el cliente.
+                                                        // Cualquier cambio en los filtros actualizará la url y este hook devolverá los nuevos valores
 
-  const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.products.getMany.queryOptions({
-    category, // este sería el input del procedimiento -> obtendriamos el valor de los productos correspondientes a la categoría
-    ...filters // filtros aplicados en url
+  const trpc = useTRPC();                               // Instancia del cliente trpc para realizar llamadas a la api 
+
+  const { data } = useSuspenseQuery(                    // useSuspenseQuery detecta cambios en filters -> nueva petición a trpc -> actualiza page sin recargarla                   
+    trpc.products.getMany.queryOptions({                // Llamada al procedimiento products.getMany para obtener los productos pasandole 
+      category,                                         // este sería el input del procedimiento -> obtendriamos el valor de los productos correspondientes a la categoría
+      ...filters                                        // filtros aplicados en url
   }))
 
   return (
