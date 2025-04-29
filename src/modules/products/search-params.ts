@@ -1,6 +1,10 @@
-import { parseAsString, parseAsArrayOf, createLoader, } from "nuqs/server";
+import { parseAsString, parseAsArrayOf, createLoader, parseAsStringLiteral, } from "nuqs/server";
+
+const sortValues = ['curated', 'trending', 'hot_and_new'] as const;
 
 const params = {
+  sort: parseAsStringLiteral(sortValues)     // parseAsStringLiteral indica a nuqs que trate como string "?sort=.." 
+    .withDefault('curated'),                 
   minPrice: parseAsString                    // parseAsString indica a nuqs que trate como string "?minPrice=.."       
     .withOptions({
       clearOnDefault: true,                  // Si el valor por defecto es vacío, se borra la cadena de consulta    
