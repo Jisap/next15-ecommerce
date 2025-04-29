@@ -48,18 +48,27 @@ export const ProductFilters = () => {
     setFilters({ minPrice: undefined, maxPrice: undefined });
   }
 
+  const hasAnyFilters = Object.entries(filters).some(([key, value]) => {        // Verifica si hay algún filtro aplicado en la url
+    if(typeof value === 'string'){ // Si el valor es una cadena de texto
+      return value !== '';         // devuelve true si la cadena no esta vacía
+    }
+    return value !== null;         // Si el valor no es una cadena devuelve true si es diferente de null
+  });
+
   return (
     <div className="border rounded-md bg-white">
       {/* Cabecera de filtros */}
       <div className="p-4 border-b flex items-center justify-between">
         <p className="font-medium">Filters</p>
-        <button 
-          className="underline"
-          onClick={() => onClear()}
-          type="button"  
-        >
-          Clear
-        </button>
+        {hasAnyFilters && (
+          <button 
+            className="underline cursor-pointer"
+            onClick={() => onClear()}
+            type="button"  
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Filtros de productos */}
