@@ -76,7 +76,7 @@ export const productsRouter = createTRPCRouter({
       }
 
       if(input.tags && input.tags.length > 0) {                     // Si se proporcionan tags, crea un filtro para buscar productos que tengan al menos una de las etiquetas
-        where["tags.slug"] = {
+        where["tags.name"] = {
           in: input.tags
         }
       }
