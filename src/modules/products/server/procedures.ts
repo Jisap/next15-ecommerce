@@ -1,6 +1,6 @@
 
 import { baseProcedure, createTRPCRouter } from "@/app/trpc/init";
-import { Category } from "@/payload-types";
+import { Category, Media } from "@/payload-types";
 import type { Sort, Where } from "payload";
 import { z } from "zod";
 import { sortValues } from "../search-params";
@@ -104,7 +104,13 @@ export const productsRouter = createTRPCRouter({
         sort,
       })
   
-      return data;
+      return {
+        ...data,
+        docs: data.docs.map((doc) => ({
+          ...doc,
+          image: doc.image as Media | null                          // Aseguramos que la propiedad image sea de tipo Media
+        }))
+      }
     
 
 
