@@ -1,4 +1,5 @@
 import { getQueryClient, trpc } from "@/app/trpc/server";
+import { DEFAULT_LIMIT } from "@/constants";
 import { loadProductFilters } from "@/modules/products/search-params";
 import { ProductListView } from "@/modules/products/views/product-list-view";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -19,9 +20,10 @@ const Page = async ({ params, searchParams }: Props) => {
   const filters = await loadProductFilters(searchParams);
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({ // Prefetch de productos con populate de category y filtro aplicados en url
+  void queryClient.prefetchInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({ // Prefetch de productos con populate de category y filtro aplicados en url
     category: subcategory,
-    ...filters
+    ...filters,
+    limit: DEFAULT_LIMIT
   }));
 
   return (
