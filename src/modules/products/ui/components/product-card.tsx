@@ -1,6 +1,7 @@
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Product } from '../../../../payload-types';
 
 
 interface ProductCardProps {
@@ -26,7 +27,7 @@ export const ProductCard = ({
 }: ProductCardProps) => {
 
   return (
-    <Link href="/">
+    <Link href={`/products/${id}`}>
       <div className="border rounded-md bg-white overflow-hidden h-full flex flex-col">
         <div className="relative aspect-square">
           <Image 
@@ -82,5 +83,11 @@ export const ProductCard = ({
         </div>
       </div>
     </Link>
+  )
+};
+
+export const ProductCardSkeleton = () => {
+  return (
+    <div className="w-full aspect-3/4 bg-neutral-200 rounded-lg animate-pulse" />
   )
 }
