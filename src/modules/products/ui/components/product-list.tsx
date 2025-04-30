@@ -19,7 +19,7 @@ export const ProductList = ({ category }: Props) => {
   const trpc = useTRPC();                               // Instancia del cliente trpc para realizar llamadas a la api 
 
   const { data } = useSuspenseQuery(                    // useSuspenseQuery detecta cambios en filters -> nueva petición a trpc -> actualiza page sin recargarla                   
-    trpc.products.getMany.queryOptions({                // Llamada al procedimiento products.getMany para obtener los productos pasandole 
+    trpc.products.getMany.queryOptions({                // Llamada al procedimiento products.getMany para obtener los productos pasandole la categoría y los filtros aplicados en url
       category,                                         // este sería el input del procedimiento -> obtendriamos el valor de los productos correspondientes a la categoría
       ...filters                                        // filtros aplicados en url
   }))

@@ -14,7 +14,7 @@ export const ProductSort = () => {
       <Button
         size="sm"
         className={cn(
-          "rouded-full bg-white hover:bg-white",
+          "rounded-full bg-white hover:bg-white",
           filters.sort !== "curated" && "bg-transparent border-transparent hover:border-border hover:bg-transparent"
         )}
         variant="secondary"
@@ -26,7 +26,7 @@ export const ProductSort = () => {
       <Button
         size="sm"
         className={cn(
-          "rouded-full bg-white hover:bg-white",
+          "rounded-full bg-white hover:bg-white",
           filters.sort !== "trending" && "bg-transparent border-transparent hover:border-border hover:bg-transparent"
         )}
         variant="secondary"
@@ -38,7 +38,7 @@ export const ProductSort = () => {
       <Button
         size="sm"
         className={cn(
-          "rouded-full bg-white hover:bg-white",
+          "rounded-full bg-white hover:bg-white",
           filters.sort !== "hot_and_new" && "bg-transparent border-transparent hover:border-border hover:bg-transparent"
         )}
         variant="secondary"
