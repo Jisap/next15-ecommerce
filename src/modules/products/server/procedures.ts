@@ -4,6 +4,7 @@ import { Category, Media } from "@/payload-types";
 import type { Sort, Where } from "payload";
 import { z } from "zod";
 import { sortValues } from "../search-params";
+import { DEFAULT_LIMIT } from "@/constants";
 
 
 export const productsRouter = createTRPCRouter({
@@ -11,6 +12,9 @@ export const productsRouter = createTRPCRouter({
   getMany: baseProcedure
     .input(
       z.object({
+        // Define los parámetros de entrada para filtrar productos y paginar
+        cursor: z.number().default(1),                
+        limit: z.number().default(DEFAULT_LIMIT),
         // Define los parámetros de entrada para filtrar productos
         category: z.string().nullable().optional(),              // Slug de la categoría para filtrar
         minPrice: z.string().nullable().optional(),              // Precio mínimo (como string)
@@ -102,6 +106,8 @@ export const productsRouter = createTRPCRouter({
         depth: 1,                                                   // Se hace populate de "category" & "image"
         where,                                                      // Aplica todos los filtros configurados (precio y/o categoría)
         sort,
+        page: input.cursor,
+        limit: input.limit,
       })
   
       return {

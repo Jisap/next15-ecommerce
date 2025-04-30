@@ -1,9 +1,11 @@
 "use client"
 
 import { useTRPC } from '@/app/trpc/client';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useProductFilters } from '../../hooks/use-product-filters';
 import { ProductCard } from './product-card';
+import { get } from 'http';
+import { DEFAULT_LIMIT } from '@/constants';
 
 interface Props {
   category?: string;
@@ -18,15 +20,22 @@ export const ProductList = ({ category }: Props) => {
 
   const trpc = useTRPC();                               // Instancia del cliente trpc para realizar llamadas a la api 
 
-  const { data } = useSuspenseQuery(                    // useSuspenseQuery detecta cambios en filters -> nueva petición a trpc -> actualiza page sin recargarla                   
-    trpc.products.getMany.queryOptions({                // Llamada al procedimiento products.getMany para obtener los productos pasandole la categoría y los filtros aplicados en url
+  const { data } = useSuspenseInfiniteQuery(            // useSuspenseQuery detecta cambios en filters -> nueva petición a trpc -> actualiza page sin recargarla                   
+    trpc.products.getMany.infiniteQueryOptions({        // Llamada al procedimiento products.getMany para obtener los productos pasandole la categoría y los filtros aplicados en url
       category,                                         // este sería el input del procedimiento -> obtendriamos el valor de los productos correspondientes a la categoría
-      ...filters                                        // filtros aplicados en url
-  }))
+      ...filters,                                       // filtros aplicados en url
+      limit: DEFAULT_LIMIT,
+    },
+    {
+      getNextPageParam: (lastPage) => {
+        return lastPage.docs.length > 0 ? lastPage.nextPage : undefined;
+      }
+    }
+  ))
 
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4'>
-      {data?.docs.map((product) => (
+      {data?.pages.flatMap((page) => page.docs).map((product) => (
         <ProductCard 
           key={product.id}
           id={product.id}
