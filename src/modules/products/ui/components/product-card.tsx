@@ -1,3 +1,4 @@
+import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -52,9 +53,30 @@ export const ProductCard = ({
                 className="rounded-full border shrink-0 size-[16px]"
               />
             )}
-            
+
             <p className="text-sm underline font-medium">
               {authorUsername}
+            </p>
+          </div>
+
+          {reviewCount > 0  && (
+            <div className="flex items-center gap-1">
+              <StarIcon className="size-3.5 fill-black"/>
+              <p className="text-xs font-medium">
+                {reviewRating} ({reviewCount})
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="p-4">
+          <div className="relative px-2 py-1 border bg-pink-400 w-fit">
+            <p className="text-sm font-medium">
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 0
+              }).format(Number(price))}
             </p>
           </div>
         </div>
