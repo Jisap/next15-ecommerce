@@ -30,6 +30,11 @@ export const Tenants: CollectionConfig = {
       }
     },
     {
+      name: "image",
+      type: "upload",
+      relationTo: "media",
+    },
+    {
       name: "stripeAccountId",
       type: "text",
       required: true,
@@ -44,6 +49,7 @@ export const Tenants: CollectionConfig = {
         readOnly: true,
         description: "You cannot create products until you submit your Stripe details"
       }
-    }
+    },
+    
   ],
 }
