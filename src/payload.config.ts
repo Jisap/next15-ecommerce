@@ -6,6 +6,7 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 
 // Sino te funcionan las importaciones de las colecciones y por tanto no se puede generar el tipo de los datos con "npm run generate:types"
 // 1º Modifica el package.json y añade "type": "module"
@@ -41,6 +42,15 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
+    multiTenantPlugin({                // Especifica qué colecciones dependen de un 'tenant' (inquilino/tienda) (ejecutar "npx payload generate:importmap" para actualizar los componentes asociados) 
+      collections: {
+        products: {},                  // Los productos pertenecen a tenants específicos (tiendas)  
+      },
+      tenantsArrayField: {             // Configura cómo se vinculan los usuarios a los tenants              
+        includeDefaultField: false,    // No añadir automáticamente un campo 'tenants' a la colección Users
+      },
+      userHasAccessToAllTenants: (user) => Boolean(user?.roles?.includes("super-admin"))  // Define quién tiene acceso a TODOS los tenants
+    })
     // storage-adapter-placeholder
   ],
 })

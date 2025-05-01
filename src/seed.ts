@@ -145,7 +145,17 @@ const categories = [
 
 const seed = async () => {
 
-  const payload = await getPayload({ config })
+  const payload = await getPayload({ config });
+
+  await payload.create({
+    collection: "users",
+    data: {
+      email: "admin@demo.com",
+      password: "demo",
+      roles: ["super-admin"],
+      username: "admin",
+    }
+  })
 
   // --- Inicio del bloque para limpiar la colección 'categories' ---
   try {

@@ -9,7 +9,6 @@ export const Tenants: CollectionConfig = {
   admin: {
     useAsTitle: 'slug',
   },
-  auth: true, // ← esto activa la autenticación y el manejo de tokens
   fields: [
     {
       name: "name",
@@ -41,7 +40,6 @@ export const Tenants: CollectionConfig = {
     {
       name: "stripeDetailsSubmitted",
       type: "checkbox",
-      required: true,
       admin: {
         readOnly: true,
         description: "You cannot create products until you submit your Stripe details"

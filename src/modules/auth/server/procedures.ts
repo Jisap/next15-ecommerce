@@ -41,12 +41,27 @@ export const authRouter = createTRPCRouter({
         })
       }
 
+      const tenant = await ctx.db.create({          // Se crea un nuevo tenant
+        collection: "tenants",
+        data: {
+          name: input.username,
+          slug: input.username,
+          stripeAccountId: "test"
+        }
+      })
+
+
       await ctx.db.create({                         // 1. Se crea un nuevo usuario en la colección 'users' 
         collection: "users",
         data: {
           email: input.email,
           password: input.password,
           username: input.username,
+          tenants: [
+            {
+              tenant: tenant.id,                    // Se añade el tenant al usuario
+            }
+          ]
         }
       })
 
