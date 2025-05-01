@@ -11,11 +11,12 @@ import { InboxIcon } from 'lucide-react';
 
 interface Props {
   category?: string;
+  tenantSlug?: string;
 }
 
 
 // Muestra una lista de productos filtrados por categoría y filtros aplicados en url
-export const ProductList = ({ category }: Props) => {
+export const ProductList = ({ category, tenantSlug }: Props) => {
 
   const [filters] = useProductFilters();                // Estado de filters hidratado inicialmente al cargar [category] leido desde el cliente.
                                                         // Cualquier cambio en los filtros actualizará la url y este hook devolverá los nuevos valores
@@ -31,6 +32,7 @@ export const ProductList = ({ category }: Props) => {
     trpc.products.getMany.infiniteQueryOptions({        // Llamada al procedimiento products.getMany para obtener los productos pasandole la categoría y los filtros aplicados en url
       category,                                         // este sería el input del procedimiento -> obtendriamos el valor de los productos correspondientes a la categoría
       ...filters,                                       // filtros aplicados en url
+      tenantSlug,
       limit: DEFAULT_LIMIT,
     },
     {
