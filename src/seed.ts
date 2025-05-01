@@ -147,6 +147,55 @@ const seed = async () => {
 
   const payload = await getPayload({ config });
 
+  // --- Limpieza de usuarios "super-admin" ---
+  try {
+    console.log('Deleting users with role "super-admin"...');
+    const nativeDb = payload.db.connection.db;
+    if (nativeDb) {
+      const usersCollection = nativeDb.collection(payload.collections.users.config.slug!);
+      const result = await usersCollection.deleteMany({ roles: "super-admin" });
+      console.log(`Deleted ${result.deletedCount} super-admin user(s).`);
+    } else {
+      console.warn('Could not get native DB connection to delete super-admin users.');
+    }
+  } catch (error: any) {
+    console.error('Error deleting super-admin users:', error);
+    throw error;
+  }
+  // --- Fin limpieza ---
+
+  // --- Limpieza de la colección 'tenants' ---
+  try {
+    console.log('Dropping existing tenants collection...');
+    const nativeDb = payload.db.connection.db;
+    if (nativeDb) {
+      const collectionSlug = payload.collections.tenants.config.slug!;
+      await nativeDb.dropCollection(collectionSlug);
+      console.log('Tenants collection dropped successfully.');
+    } else {
+      console.warn('Could not get native DB connection to drop tenants collection.');
+    }
+  } catch (error: any) {
+    if (error.code === 26 || error.message.includes('ns not found')) {
+      console.log('Tenants collection did not exist, skipping drop.');
+    } else {
+      console.error('Error dropping tenants collection:', error);
+      throw error;
+    }
+  }
+  // --- Fin limpieza ---
+
+  // Create admin tenant
+  const adminTenant = await payload.create({
+    collection: "tenants",
+    data: {
+      name: "admin",
+      slug: "admin",
+      stripeAccountId: "admin",
+    }
+  })
+
+  // Create admin user
   await payload.create({
     collection: "users",
     data: {
@@ -154,6 +203,11 @@ const seed = async () => {
       password: "demo",
       roles: ["super-admin"],
       username: "admin",
+      tenants: [
+        {
+          tenant: adminTenant.id,
+        }
+      ]
     }
   })
 
