@@ -20,7 +20,8 @@ export const productsRouter = createTRPCRouter({
         minPrice: z.string().nullable().optional(),              // Precio mínimo (como string)
         maxPrice: z.string().nullable().optional(),              // Precio máximo (como string)
         tags: z.array(z.string()).nullable().optional(),         // Arreglo de slugs de etiquetas para filtrar
-        sort: z.enum(sortValues).nullable().optional(),                     // Orden de los productos
+        sort: z.enum(sortValues).nullable().optional(),          // Orden de los productos
+        tenantSlug: z.string().nullable().optional(),            // Slug de la tienda para filtrar
       })
     )
     .query(async ({ ctx, input }) => {               
@@ -56,6 +57,12 @@ export const productsRouter = createTRPCRouter({
           less_than_equal: input.maxPrice,
         }
       }
+
+      if (input.tenantSlug) {                          // Si se proporciona un slug de tienda, construye filtros basados en el nombre de la tienda
+        where["tenant.slug"] = {
+          equals: input.tenantSlug
+        }
+      }                          
 
       if (input.category) {                            // Si se proporciona un slug de categoría, construye filtros basados en la jerarquía de categorías
         const categoriesData = await ctx.db.find({                 // 1. Busca la categoría específica por su slug
