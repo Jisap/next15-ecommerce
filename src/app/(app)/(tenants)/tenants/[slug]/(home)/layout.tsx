@@ -1,23 +1,37 @@
+import { getQueryClient, trpc } from "@/app/trpc/server";
 import { Footer } from "@/modules/tenants/ui/components/footer";
 import { Navbar } from "@/modules/tenants/ui/components/navbar";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 
 
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: Promise<{slug: string}>;
+  params: Promise<{slug: string}>;  // Se reciben los params de la ruta de la URL [slug]
 
 }
 
-const Layout = async({ children }: LayoutProps) => {
+const Layout = async({ children, params }: LayoutProps) => {
 
+  const { slug } = await params;
+  
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(trpc.tenants.getOne.queryOptions({ // Prefetch de un tenant según el slug de la url
+    slug
+   }));
 
   return (
     <div className='min-h-screen bg-[#F4F4F0] flex flex-col'> 
-      <Navbar />
-      {children}
-      <Footer />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Navbar slug={slug}/>
+          <div className="flex-1">
+            <div className="max-w-(--breakpoint-xl) mx-auto">
+              {children}
+            </div>
+          </div>
+        <Footer />
+      </HydrationBoundary>
     </div>
   )
 }
