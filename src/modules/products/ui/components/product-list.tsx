@@ -4,7 +4,6 @@ import { useTRPC } from '@/app/trpc/client';
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useProductFilters } from '../../hooks/use-product-filters';
 import { ProductCard, ProductCardSkeleton } from './product-card';
-import { get } from 'http';
 import { DEFAULT_LIMIT } from '@/constants';
 import { Button } from '@/components/ui/button';
 import { InboxIcon } from 'lucide-react';

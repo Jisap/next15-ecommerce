@@ -1,4 +1,5 @@
-import Navbar from "@/modules/tenants/ui/components/navbar";
+import { Navbar } from "@/modules/tenants/ui/components/navbar";
+
 
 
 
