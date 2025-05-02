@@ -2,14 +2,16 @@ import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from '../../../../payload-types';
+import { useRouter } from "next/navigation";
+import { generateTenantURL } from "@/lib/utils";
 
 
 interface ProductCardProps {
   id: string;
   name: string;
   imageUrl?: string | null;
-  authorUsername: string;
-  authorImageUrl?: string | null;
+  tenantSlug: string;
+  tenantImageUrl?: string | null;
   reviewRating: number;
   reviewCount: number;
   price: number;
@@ -19,12 +21,22 @@ export const ProductCard = ({
   id, 
   name, 
   imageUrl, 
-  authorUsername, 
-  authorImageUrl, 
+  tenantSlug, 
+  tenantImageUrl, 
   reviewRating, 
   reviewCount, 
   price
 }: ProductCardProps) => {
+
+  const router = useRouter();
+
+  const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(generateTenantURL(tenantSlug));
+
+  }
+
 
   return (
     <Link href={`/products/${id}`}>
@@ -43,12 +55,14 @@ export const ProductCard = ({
             {name}
           </h2>
           
-          {/* TODO: redirect to user shop */}
-          <div className="flex items-center gap-2">
-            {authorImageUrl && (
+          <div 
+            className="flex items-center gap-2"
+            onClick={handleUserClick} // /tenants/tenantSlug
+          >
+            {tenantImageUrl && (
               <Image 
-                alt={authorUsername}
-                src={authorImageUrl}
+                alt={tenantSlug}
+                src={tenantImageUrl}
                 width={16}
                 height={16}
                 className="rounded-full border shrink-0 size-[16px]"
@@ -56,7 +70,7 @@ export const ProductCard = ({
             )}
 
             <p className="text-sm underline font-medium">
-              {authorUsername}
+              {tenantSlug}
             </p>
           </div>
 

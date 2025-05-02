@@ -2,6 +2,7 @@
 
 
 import { useTRPC } from '@/app/trpc/client';
+import { generateTenantURL } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,7 +20,7 @@ export const Navbar = ({ slug }: Props ) => {
   return (
     <nav className='h-20 border-b font-medium bg-white'>
       <div className='max-w-(--breakpoint-xl) mx-auto flex justify-between items-center h-full px-4 lg:px-12'>
-        <Link href={`/tenants/${slug}`} className="flex items-center gap-2">
+        <Link href={generateTenantURL(slug)} className="flex items-center gap-2">
           {data.image?.url && (
             <Image 
               src={data.image.url}
