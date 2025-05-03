@@ -5,11 +5,13 @@
 import { useTRPC } from '@/app/trpc/client';
 import { StarRating } from '@/components/star-rating';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { formatCurrency, generateTenantURL } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { LinkIcon, StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Fragment } from 'react';
 
 
 interface ProductViewProps {
@@ -151,6 +153,23 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
                     <p>({5})</p>
                     <p className='text-base'>{5} ratings</p>
                   </div>
+                </div>
+
+                <div className='grid grid-cols-[auto_1fr_auto] gap-3 mt-4'>
+                  {[5, 4, 3, 2, 1].map((stars) => (
+                    <Fragment key={stars}>
+                      <div className='font-medium'>
+                        {stars} {stars === 1 ? "star" : "stars"}
+                      </div>
+                      <Progress 
+                        value={0}
+                        className='h-[1lh]'
+                      />
+                      <div className='font-medium'>
+                        {0}%
+                      </div>
+                    </Fragment>
+                  ))}
                 </div>
               </div>
             </div>
