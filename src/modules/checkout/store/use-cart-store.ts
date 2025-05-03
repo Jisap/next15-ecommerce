@@ -17,15 +17,17 @@ interface CartState {
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
-      tenantCarts: {},
+      
+      tenantCarts: {}, // Inicialización del store
+      
       addProduct: (tenantSlug, productId) =>
         set((state) => ({
           tenantCarts: {
-            ...state.tenantCarts,
-            [tenantSlug]: {
-              productIds: [
-                ...(state.tenantCarts[tenantSlug]?.productIds || []),
-                productId,
+            ...state.tenantCarts,                                     // copia es estado de tenantCarts
+            [tenantSlug]: {                                           // En la clave tenantSlug, agrega un nuevo objeto 
+              productIds: [                                           // y dentro define el nuevo valor para productIds   
+                ...(state.tenantCarts[tenantSlug]?.productIds || []),     // 1º  copia el valor de productIds si existe
+                productId,                                                // 2º  agrega el productId a esa posición
               ]
             }
           }
@@ -36,7 +38,7 @@ export const useCartStore = create<CartState>()(
           tenantCarts: {
             ...state.tenantCarts,
             [tenantSlug]: {
-              productIds: state.tenantCarts[tenantSlug]?.productIds.filter(
+              productIds: state.tenantCarts[tenantSlug]?.productIds.filter(  // Mantiene solo los IDs que NO son el que queremos quitar
                 (id) => id !== productId
               ) || [],
             }
