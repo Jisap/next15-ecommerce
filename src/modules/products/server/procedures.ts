@@ -21,7 +21,10 @@ export const productsRouter = createTRPCRouter({
         id: input.id,
       });
 
-      return product;
+      return {
+        ...product,
+        image: product.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
+      }
     }),
   
   getMany: baseProcedure
