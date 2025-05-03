@@ -19,11 +19,13 @@ export const productsRouter = createTRPCRouter({
       const product = await ctx.db.findByID({
         collection: "products",
         id: input.id,
+        depth: 2, // load product.image, product.tenant & product.tenant.image
       });
 
       return {
         ...product,
         image: product.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
+        tenant: product.tenant as Tenant & { image: Media | null },   // Aseguramos que el campo tenant añadida por el plugin multitenant sea de tipo Tenant y su propiedad image sea de tipo Media
       }
     }),
   
