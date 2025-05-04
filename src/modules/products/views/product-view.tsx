@@ -22,7 +22,11 @@ import dynamic from 'next/dynamic';
 
 const CartButton = dynamic(() => import('../ui/components/cart-button').then(  // Solo después de que la carga inicial y la hidratación principal han ocurrido, el CartButton se monta y renderiza por primera vez, ya directamente en el entorno del cliente.
   (mod) => mod.CartButton                                                      // En este punto, useCart puede acceder a localStorage sin problemas y el botón se renderiza con el estado correcto desde el principio (en el cliente),
-), { ssr: false });                                                            // ssr: false no renderiza el componente en el server-side
+), { 
+  ssr: false,                                                                  // ssr: false no renderiza el componente en el server-side
+  loading: () => <Button disabled className='flex-1 bg-pink-400'>Add to cart</Button>,                                     
+  }
+);                                                            
 
 
 interface ProductViewProps {
