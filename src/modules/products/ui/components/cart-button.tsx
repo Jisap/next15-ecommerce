@@ -7,7 +7,7 @@ interface Props {
   productId: string;
 }
 
-const CartButton = ({ tenantSlug, productId }: Props) => {
+export const CartButton = ({ tenantSlug, productId }: Props) => {
 
   const cart = useCart(tenantSlug);
 
@@ -24,5 +24,3 @@ const CartButton = ({ tenantSlug, productId }: Props) => {
     </Button>
   )
 }
-
-export default CartButton

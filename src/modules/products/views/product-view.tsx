@@ -12,7 +12,17 @@ import { LinkIcon, StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment } from 'react';
-import CartButton from '../ui/components/cart-button';
+//import { CartButton } from '../ui/components/cart-button';
+import dynamic from 'next/dynamic';
+
+// Se usa dynamic con ssr: false para componentes que dependen de estado o APIs exclusivas del navegador 
+// (como localStorage a través de useCart) durante su renderizado inicial. Esto evita que el servidor intente 
+// adivinar un estado que no conoce, previniendo así las discrepancias con el renderizado inicial del cliente 
+// y los consecuentes errores de hidratación.
+
+const CartButton = dynamic(() => import('../ui/components/cart-button').then(  // Solo después de que la carga inicial y la hidratación principal han ocurrido, el CartButton se monta y renderiza por primera vez, ya directamente en el entorno del cliente.
+  (mod) => mod.CartButton                                                      // En este punto, useCart puede acceder a localStorage sin problemas y el botón se renderiza con el estado correcto desde el principio (en el cliente),
+), { ssr: false });                                                            // ssr: false no renderiza el componente en el server-side
 
 
 interface ProductViewProps {
