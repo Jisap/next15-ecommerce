@@ -22,7 +22,8 @@ const CheckoutButton = dynamic(() => import('@/modules/checkout/ui/components/ch
       className='bg-white'
     >
       <ShoppingCart className='text-black' />
-    </Button>),
+    </Button>
+  ),
 }
 ); 
 
@@ -53,6 +54,7 @@ export const Navbar = ({ slug }: Props ) => {
 
         <CheckoutButton 
           tenantSlug={slug}
+          hideIfEmpty
         />
       </div>
     </nav>
@@ -64,7 +66,12 @@ export const NavbarSkeleton = () => {
     <nav className='h-20 border-b font-medium bg-white'>
       <div className='max-w-(--breakpoint-xl) mx-auto flex justify-between items-center h-full px-4 lg:px-12'>
         <div />
-        {/* TODO: skeleton for checkout button */}
+        <Button
+          disabled
+          className='bg-white'
+        >
+          <ShoppingCart className='text-black' />
+        </Button>
       </div>
     </nav>
   )
