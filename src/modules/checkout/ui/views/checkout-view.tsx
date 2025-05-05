@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { generateTenantURL } from '@/lib/utils';
 import { CheckoutItem } from '../components/checkout-item';
 import { CheckoutSidebar } from './checkout-sidebar';
+import { InboxIcon, LoaderIcon } from 'lucide-react';
 
 
 interface CheckoutViewProps {
@@ -19,7 +20,7 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
   const { productIds, clearAllCarts, removeProduct } = useCart(tenantSlug)
   
   const trpc = useTRPC();
-  const { data, error } = useQuery(trpc.checkout.getProducts.queryOptions({ // Obtenemos los productos del cart para el checkout
+  const { data, error, isLoading } = useQuery(trpc.checkout.getProducts.queryOptions({ // Obtenemos los productos del cart para el checkout
     ids: productIds
   }));
 
@@ -29,7 +30,32 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
       clearAllCarts();
       toast.warning("Invalid products found, cart cleared")
     }
-  },[error, clearAllCarts])
+  },[error, clearAllCarts]);
+
+  if(isLoading) {
+    return (
+      <div className='lg:pt-16 pt-4 px-4 lg:px-12'>
+        <div className='border border-black border-dashed flex items-center justify-center p-8 flex-col gap-y-4 bg-white w-full rounded-lg'>
+          <LoaderIcon className="text-muted-foreground animate-spin" />
+          
+        </div>
+      </div>
+    )
+  }
+
+  if(data?.totalDocs === 0) {
+    return (
+      <div className='lg:pt-16 pt-4 px-4 lg:px-12'>
+        <div className='border border-black border-dashed flex items-center justify-center p-8 flex-col gap-y-4 bg-white w-full rounded-lg'>
+          <InboxIcon />
+          <p className='text-base font-medium'>
+            No products found
+          </p>
+        </div>
+      </div>
+    )
+  }
+  
   
    return (
     <div className='lg:pt-16 pt-4 px-4 lg:px-12'>
