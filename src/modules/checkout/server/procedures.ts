@@ -17,7 +17,7 @@ export const checkoutRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {               
       
-      const data = await ctx.db.find({                              // 5. Realiza la consulta final para obtener los productos filtrados
+      const data = await ctx.db.find({                              // Realiza la consulta final para obtener los productos filtrados
         collection: "products",                                     // Se busca en la colección "products"
         depth: 2,                                                   // populate de "category", "image" & "tenant" & "tenant.image"
         where: {                                                  
@@ -31,7 +31,7 @@ export const checkoutRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
       }
 
-      const totalPrice = data.docs.reduce((acc, product) => {
+      const totalPrice = data.docs.reduce((acc, product) => {       // Calcula el total de precio de los productos
         const price = Number(product.price);
         return acc + (isNaN(price) ? 0 : price)
       }, 0)
