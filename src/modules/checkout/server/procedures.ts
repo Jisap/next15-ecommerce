@@ -17,7 +17,6 @@ export const checkoutRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {               
       
-      
       const data = await ctx.db.find({                              // 5. Realiza la consulta final para obtener los productos filtrados
         collection: "products",                                     // Se busca en la colección "products"
         depth: 2,                                                   // populate de "category", "image" & "tenant" & "tenant.image"
