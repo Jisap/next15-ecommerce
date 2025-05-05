@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { generateTenantURL } from '@/lib/utils';
 import { CheckoutItem } from '../components/checkout-item';
+import { CheckoutSidebar } from './checkout-sidebar';
 
 
 interface CheckoutViewProps {
@@ -38,7 +39,6 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
             {data?.docs.map((product, index) => (
               <CheckoutItem 
                 key={product.id}
-                id={product.id}
                 isLast={index === data.docs.length - 1}
                 imageUrl={product.image?.url}
                 name={product.name}
@@ -53,7 +53,12 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
         </div>
 
         <div className='lg:col-span-3'>
-          Checkout sidebar
+          <CheckoutSidebar 
+            total={data?.totalPrice ?? 0}
+            onCheckout={() => {}}
+            isCanceled={false}
+            isPending={false}
+          />
         </div>
        </div>
     </div>

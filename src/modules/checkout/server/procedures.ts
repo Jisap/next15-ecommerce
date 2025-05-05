@@ -34,6 +34,7 @@ export const checkoutRouter = createTRPCRouter({
   
       return {
         ...data,
+        totalPrice: data.docs.reduce((acc, product) => acc + product.price, 0),
         docs: data.docs.map((doc) => ({
           ...doc,
           image: doc.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
