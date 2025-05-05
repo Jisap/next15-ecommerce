@@ -31,10 +31,14 @@ export const checkoutRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
       }
 
+      const totalPrice = data.docs.reduce((acc, product) => {
+        const price = Number(product.price);
+        return acc + (isNaN(price) ? 0 : price)
+      }, 0)
   
       return {
         ...data,
-        totalPrice: data.docs.reduce((acc, product) => acc + product.price, 0),
+        totalPrice: totalPrice,
         docs: data.docs.map((doc) => ({
           ...doc,
           image: doc.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
