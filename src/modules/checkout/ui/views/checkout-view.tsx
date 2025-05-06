@@ -47,11 +47,12 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
 
   useEffect(() => {
     if(states.success) {                                                               // Si el checkout fue exitoso, se borran los productos del cart y se redirige a la página de productos
+      setStates({ success: false, cancel: false });
       clearCart();
       //TODO: Invalidate library
       router.push("/products")
     }
-  },[states.success, clearCart, router])
+  },[states.success, clearCart, router, setStates])
 
   useEffect(() => {
     if( !error ) return;
