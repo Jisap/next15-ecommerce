@@ -1,7 +1,7 @@
 "use client"
 
 import { useTRPC } from '@/app/trpc/client';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCart } from '../../hooks/use-cart';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
@@ -9,6 +9,8 @@ import { generateTenantURL } from '@/lib/utils';
 import { CheckoutItem } from '../components/checkout-item';
 import { CheckoutSidebar } from './checkout-sidebar';
 import { InboxIcon, LoaderIcon } from 'lucide-react';
+import { useCheckoutStates } from '../../hooks/use-checkout-states';
+import { useRouter } from 'next/navigation';
 
 
 interface CheckoutViewProps {
@@ -16,21 +18,48 @@ interface CheckoutViewProps {
 }
 
 export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
+  const router = useRouter();
 
-  const { productIds, clearAllCarts, removeProduct } = useCart(tenantSlug)
+  const [states, setStates] = useCheckoutStates();                                     // Estados de la compra según url. Despues de hacer la compra stripe nos redirige aquí con los params "?success=true/false"
+
+  const { productIds, removeProduct, clearCart } = useCart(tenantSlug)
   
   const trpc = useTRPC();
   const { data, error, isLoading } = useQuery(trpc.checkout.getProducts.queryOptions({ // Obtenemos los productos del cart para el checkout
     ids: productIds
   }));
 
+  const purchase = useMutation(trpc.checkout.purchase.mutationOptions({                // Mutation para realizar la compra de productos gestionada por tanstack
+    
+    onMutate: () => {                                                                  // Se ejecuta justo antes de que la función de mutación principal se dispare.
+      setStates({ success: false, cancel: false });                                    // Se limpian los estados anteriores 
+    },
+    
+    onSuccess: (data) => { window.location.href = data.url },                          // Si la creación de la checkout session (atraves de la mutation) es exitosa checkout devuelve data (checkout.url) -> página de pago de stripe -> stripe redirige despues a "success_url/cancel_url" expecificado en el procedimiento de checkout
+    
+    onError: (error) => {
+      if(error.data?.code === "UNAUTHORIZED"){
+        router.push("/sign-in")
+      }
+      toast.error(error.message)
+    }
+  }));
+
+  useEffect(() => {
+    if(states.success) {                                                               // Si el checkout fue exitoso, se borran los productos del cart y se redirige a la página de productos
+      clearCart();
+      //TODO: Invalidate library
+      router.push("/products")
+    }
+  },[states.success, clearCart, router])
+
   useEffect(() => {
     if( !error ) return;
     if(error.data?.code === 'NOT_FOUND') {
-      clearAllCarts();
+      clearCart();
       toast.warning("Invalid products found, cart cleared")
     }
-  },[error, clearAllCarts]);
+  },[error, clearCart]);
 
   if(isLoading) {
     return (
@@ -81,9 +110,9 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
         <div className='lg:col-span-3'>
           <CheckoutSidebar 
             total={data?.totalPrice ?? 0}
-            onCheckout={() => {}}
-            isCanceled={false}
-            isPending={false}
+            onPurchase={() => purchase.mutate({ tenantSlug, productIds })}
+            isCanceled={states.cancel}
+            disabled={purchase.isPending}
           />
         </div>
        </div>
