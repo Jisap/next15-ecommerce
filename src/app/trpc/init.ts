@@ -1,8 +1,8 @@
-import { initTRPC } from '@trpc/server';                      // Biblioteca central de tRPC para crear APIs tipadas
+import { initTRPC, TRPCError } from '@trpc/server';                      // Biblioteca central de tRPC para crear APIs tipadas
 import { cache } from 'react';                                // Función de React para memoizar resultados y evitar cálculos repetidos
 import config from "@payload-config";                         // Configuración de Payload CMS
 import { getPayload } from 'payload';                         // Función para inicializar/acceder a la instancia de Payload CMS
-
+import { headers as getHeaders } from 'next/headers';
 
 
 export const createTRPCContext = cache(async () => {          // Creamos un contexto para tRPC envuelto en cache() para mejorar rendimiento        
@@ -26,3 +26,25 @@ export const baseProcedure = t.procedure.use(async({ next }) => {
   const payload = await getPayload({ config })                    // Instancia de payload
   return next({ ctx: { db: payload }})                            // Añadimos la instancia al contexto de trpc
 })                     
+
+export const protectedProcedure = baseProcedure.use(async({ ctx, next }) => {
+  const headers = await getHeaders();                            // Obtenemos los headers de la petición, incluida la cookie de la autenticación
+  const session = await ctx.db.auth({ headers});                 // Payload usa el método auth con la cookie obtenida para ver si hay una session válida
+
+  if(!session || !session.user){                                 // Si no hay session, se lanza una excepción
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Unauthorized"
+    })
+  }
+
+  return next({                                                 // Si hay session el middelware (use) llama a next() para ejecutar lo siguiente
+    ctx: {                                                      // se enrriquece el contexto de trpc con la session
+      ...ctx,
+      session: {
+        ...session,
+        user: session.user,                                     // que incluye el objeto de usuario
+      }
+    }                                                           // Cualquier query o mutation que use protectedProcedure tendrá 
+  })                                                            // acceso  a ctx.session.user permitiendo saber quien es el usuario autenticado y actuar en consecuencia
+})
