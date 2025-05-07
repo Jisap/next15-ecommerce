@@ -2,6 +2,9 @@ import type { CollectionConfig } from 'payload';
 
 export const Products: CollectionConfig = {
   slug: 'products',
+  admin: {
+    useAsTitle: 'name',  // Solo un super-admin puede leer el campo  'name' de cada producto, los usuarios normales no ->  
+  },                     // Cuando se crea una order el usuario no podra leer en name del producto en el dashboard (untitled) pero si el super-admin
   fields: [
     {
       name: "name",
