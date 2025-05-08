@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { ArrowLeftIcon } from "lucide-react"
+import { ProductList } from "../components/product-list"
 
 
 const LibraryView = () => {
@@ -24,7 +25,7 @@ const LibraryView = () => {
       </header>
 
       <section className="max-w-(--breackpoint-xl) mx-auto px-4 lg:px-12 py-10">
-        
+        <ProductList />
       </section>
     </div>
   )
