@@ -133,11 +133,14 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
             <div className='border-t lg:border-t-0 lg:border-l h-full'>
               <div className='flex flex-col gap-4 p-6 border-b'>
                 <div className='flex flex-row items-center gap-2'>
-                  <CartButton 
+                  {/* btn add to cart / btn view in library */}
+                  <CartButton
+                    isPurchased={data.isPurchased}
                     tenantSlug={tenantSlug}
                     productId={productId}
                   />
-
+                  
+                  {/* btn link to library */}
                   <Button
                     className='size-12'
                     variant="elevated"
