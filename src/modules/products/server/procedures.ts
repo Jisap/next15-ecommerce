@@ -5,6 +5,7 @@ import type { Sort, Where } from "payload";
 import { z } from "zod";
 import { sortValues } from "../search-params";
 import { DEFAULT_LIMIT } from "@/constants";
+import { headers as getHeaders } from "next/headers";
 
 
 export const productsRouter = createTRPCRouter({
@@ -16,14 +17,44 @@ export const productsRouter = createTRPCRouter({
       })
     )
     .query(async({ ctx, input }) => {
+      const headers = await getHeaders();
+      const session = await ctx.db.auth({ headers });
+
       const product = await ctx.db.findByID({
         collection: "products",
         id: input.id,
         depth: 2, // load product.image, product.tenant & product.tenant.image
       });
 
+      let isPurchased = false;                             // Por defecto el producto no se ha comprado
+
+      if(session.user){                                    // Si el usuario está autenticado
+        const ordersData = await ctx.db.find({
+          collection: "orders",                            // Buscamos en la colección "orders"
+          pagination: false,
+          limit: 1,
+          where: {
+            and: [
+              {
+                product: {                                 // si el producto de la orden  
+                  equals: input.id,                        // = producto solicitado
+                }
+              },
+              {
+                user: {                                    // y el usuario de la orden
+                  equals: session.user.id,                 // = usuario autenticado
+                }
+              }
+            ]
+          }
+        })
+
+        isPurchased = !!ordersData.docs[0];                // Si se encontró una orden con el producto y el usuario, se marca como comprado
+      }
+
       return {
         ...product,
+        isPurchased,                                                  // Se agrega la propiedad isPurchased
         image: product.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
         tenant: product.tenant as Tenant & { image: Media | null },   // Aseguramos que el campo tenant añadida por el plugin multitenant sea de tipo Tenant y su propiedad image sea de tipo Media
       }
