@@ -15,7 +15,11 @@ const Page = async({ params }: Props) => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.library.getOne.queryOptions({  // Prefetch de productos desde library.getOne
     productId
-  }))
+  }));
+
+  void queryClient.prefetchQuery(trpc.reviews.getOne.queryOptions({  // Prefetch de reviews desde reviews.getOne
+    productId 
+  })); 
 
   return (
     // HydrationBoundary transfiere el estado precargado del servidor al cliente
