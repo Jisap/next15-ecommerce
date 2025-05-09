@@ -17,7 +17,7 @@ export const libraryRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
 
-      const ordersData = await ctx.db.find({                                   // Realiza la consulta para obtener el producto de la orden del usuario autenticado
+      const ordersData = await ctx.db.find({                                   // Realiza la consulta para obtener la orden que contiene el prodcuto comprado por el usuario autenticado
         collection: "orders",                                                  // Se busca en la colección "orders"
         limit: 1,
         pagination: false,                                                     
@@ -47,7 +47,7 @@ export const libraryRouter = createTRPCRouter({
         })
       }
 
-      const product = await ctx.db.findByID({                                 // Se buscan los productos que pertenecen a los ids de las ordenes
+      const product = await ctx.db.findByID({                                 // Se buscan el producto en base al id del producto de la orden
         collection: "products",
         id: input.productId,
       })
