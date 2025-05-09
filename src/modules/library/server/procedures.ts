@@ -50,7 +50,14 @@ export const libraryRouter = createTRPCRouter({
       const product = await ctx.db.findByID({                                 // Se buscan el producto en base al id del producto de la orden
         collection: "products",
         id: input.productId,
-      })
+      });
+
+      if(!product){
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        })
+      }
 
       return product
     }),
