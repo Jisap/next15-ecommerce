@@ -17,6 +17,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
  
 interface Props {
   productId: string;
@@ -35,6 +37,28 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
 
   const [isPreview, setIsPreview] = useState(!!initialData); // Si el producto tiene reviews previamente, se muestra el botón de previsualización, sino el de post
 
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const createReview = useMutation(trpc.reviews.create.mutationOptions({
+    onSuccess: () => {
+      queryClient.invalidateQueries(trpc.reviews.getOne.queryOptions({ productId }));
+      setIsPreview(true)
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  }));
+  
+  const updateReview = useMutation(trpc.reviews.update.mutationOptions({
+    onSuccess: () => {
+      queryClient.invalidateQueries(trpc.reviews.getOne.queryOptions({ productId }));
+      setIsPreview(true)
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  }));
+
   const form = useForm<z.infer<typeof formScheam>>({
     resolver: zodResolver(formScheam),
     defaultValues: {
@@ -43,8 +67,20 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
     }
   });
 
-  const onSubmit = (data: z.infer<typeof formScheam>) => {
-    console.log(data);
+  const onSubmit = (values: z.infer<typeof formScheam>) => {
+    if(initialData){
+      updateReview.mutate({
+        reviewId: initialData.id,
+        rating: values.rating,
+        description: values.description,
+      })
+    }else{
+      createReview.mutate({
+        productId,
+        rating: values.rating,
+        description: values.description,
+      })
+    }
   }
 
   return (
