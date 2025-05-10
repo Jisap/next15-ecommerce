@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { create } from "domain";
  
 interface Props {
   productId: string;
@@ -130,7 +131,7 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
         {!isPreview && (
           <Button
             variant="elevated"
-            disabled={false}
+            disabled={createReview.isPending || updateReview.isPending}
             type="submit"
             size="lg"
             className="bg-black text-white hover:bg-pink-400 hover:text-primary w-fit"
@@ -146,7 +147,7 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
           size="lg"
           type="button"
           variant="elevated"
-          className="w-fit"
+          className="w-fit mt-4"
         >
           Edit
         </Button>
