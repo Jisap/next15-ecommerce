@@ -8,7 +8,7 @@ import { z } from "zod";
 import { useTRPC } from "@/app/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-//import { StarPicker } from "@/components/star-picker"
+import { StarPicker } from "@/components/star-picker"
 
 import {
   Form,
@@ -33,7 +33,7 @@ const formScheam = z.object({
 
 export const ReviewForm = ({ productId, initialData}: Props) => {
 
-  const [isPreview, setIsPreview] = useState(!!initialData); // Si el producto tiene reviews previamente, se muestra el botón de previsualización.
+  const [isPreview, setIsPreview] = useState(!!initialData); // Si el producto tiene reviews previamente, se muestra el botón de previsualización, sino el de post
 
   const form = useForm<z.infer<typeof formScheam>>({
     resolver: zodResolver(formScheam),
@@ -57,6 +57,22 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
           {isPreview ? "Your rating" : "Liked it ? Give it a rating"}
         </p>
 
+        <FormField
+          control={form.control}
+          name="rating"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <StarPicker
+                  value={field.value}        // valor del campo del formulario rating
+                  onChange={field.onChange}  // Recoge el valor de cambio del campo rating
+                  disabled={isPreview}       // Si el producto tiene reviews se deshabilita el campo rating
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <FormField 
           control={form.control}
           name="description"
@@ -72,6 +88,8 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
             </FormItem>
           )}
         />
+
+        
 
         {!isPreview && (
           <Button
