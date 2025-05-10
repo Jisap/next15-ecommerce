@@ -54,7 +54,7 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <p className="font-medium">
-          {isPreview ? "Your rating" : "Liked it? Give it a rating"}
+          {isPreview ? "Your rating" : "Liked it ? Give it a rating"}
         </p>
 
         <FormField 
@@ -85,6 +85,18 @@ export const ReviewForm = ({ productId, initialData}: Props) => {
           </Button>
         )}
       </form>
+
+      {isPreview && (
+        <Button
+          onClick={() => setIsPreview(false)}
+          size="lg"
+          type="button"
+          variant="elevated"
+          className="w-fit"
+        >
+          Edit
+        </Button>
+      )}
     </Form>
   )
 }
