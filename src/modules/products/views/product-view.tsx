@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { Fragment } from 'react';
 //import { CartButton } from '../ui/components/cart-button';
 import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
 
 // Se usa dynamic con ssr: false para componentes que dependen de estado o APIs exclusivas del navegador 
 // (como localStorage a través de useCart) durante su renderizado inicial. Esto evita que el servidor intente 
@@ -147,7 +148,10 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
                   <Button
                     className='size-12'
                     variant="elevated"
-                    onClick={() => { }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href); // Copia el URL del producto al portapapeles
+                      toast.success("Product URL copied to clipboard");
+                    }}
                     disabled={false}
                   >
                     <LinkIcon />
@@ -169,8 +173,8 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
                   </h3>
                   <div className='flex items-center gap-x-1 font-medium'>
                     <StarIcon className="size-4 fill-black" />
-                    <p>({5})</p>
-                    <p className='text-base'>{5} ratings</p>
+                    <p>({data.reviewRating})</p>
+                    <p className='text-base'>{data.reviewCount} ratings</p>
                   </div>
                 </div>
 
@@ -181,11 +185,11 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
                         {stars} {stars === 1 ? "star" : "stars"}
                       </div>
                       <Progress 
-                        value={0}
+                        value={data.ratingDistribution[stars]}
                         className='h-[1lh]'
                       />
                       <div className='font-medium'>
-                        {0}%
+                        {data.ratingDistribution[stars]}%
                       </div>
                     </Fragment>
                   ))}
