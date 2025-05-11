@@ -166,11 +166,34 @@ export const productsRouter = createTRPCRouter({
         sort,
         page: input.cursor,
         limit: input.limit,
-      })
+      });
+
+      const dataWithSummarizedReviews = await Promise.all(
+        data.docs.map(async (doc) => {                              // Se mapean todos los productos
+          const reviewsData = await ctx.db.find({                   // y por cada producto se busca un documento en la colección reviews
+            collection: "reviews",
+            pagination: false,
+            where: {
+              product: {
+                equals: doc.id,
+              },
+            },
+          })
+
+          return {
+            ...doc,                                                 // Se devuelven los productos con reviews
+            reviewCount: reviewsData.totalDocs,                     // el número de reviews para este producto y
+            reviewRating:                                           // la media de las ratings de los reviews
+              reviewsData.docs.length === 0
+                ? 0
+                : reviewsData.docs.reduce((acc, review) => acc + review.rating, 0) / reviewsData.totalDocs
+          }
+        })
+      )
   
       return {
-        ...data,
-        docs: data.docs.map((doc) => ({
+        ...data,                                                    // Devuelve los datos originales de data (productos y paginación)
+        docs: dataWithSummarizedReviews.map((doc) => ({             // y se sobrescribe la prop docs que se propago desde data con los datos de reviews
           ...doc,
           image: doc.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
           tenant: doc.tenant as Tenant & { image: Media | null },   // Aseguramos que la propiedad tenant sea de tipo Tenant
