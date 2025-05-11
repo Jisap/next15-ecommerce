@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency, generateTenantURL } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { LinkIcon, StarIcon } from 'lucide-react';
+import { CheckCheckIcon, LinkIcon, StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment, useState } from 'react';
@@ -159,7 +159,7 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
                     }}
                     disabled={isCopied}
                   >
-                    <LinkIcon />
+                    {isCopied ? <CheckCheckIcon /> : <LinkIcon />}
                   </Button>
                 </div>
 

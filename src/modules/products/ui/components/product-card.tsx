@@ -1,7 +1,6 @@
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Product } from '../../../../payload-types';
 import { useRouter } from "next/navigation";
 import { formatCurrency, generateTenantURL } from "@/lib/utils";
 
