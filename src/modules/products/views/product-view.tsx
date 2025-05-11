@@ -1,7 +1,5 @@
 "use client"
 
-//TODO: Add real ratings
-
 import { useTRPC } from '@/app/trpc/client';
 import { StarRating } from '@/components/star-rating';
 import { Button } from '@/components/ui/button';
@@ -11,7 +9,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { LinkIcon, StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 //import { CartButton } from '../ui/components/cart-button';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
@@ -39,6 +37,8 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
 
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.products.getOne.queryOptions({ id: productId }));
+
+  const [isCopied, setIsCopied] = useState(false);
 
   return (
     <div className='px-4 lg:px-12 py-10'>
@@ -149,10 +149,15 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
                     className='size-12'
                     variant="elevated"
                     onClick={() => {
+                      setIsCopied(true);
                       navigator.clipboard.writeText(window.location.href); // Copia el URL del producto al portapapeles
                       toast.success("Product URL copied to clipboard");
+
+                      setTimeout(() => {
+                        setIsCopied(false);
+                      }, 1000);
                     }}
-                    disabled={false}
+                    disabled={isCopied}
                   >
                     <LinkIcon />
                   </Button>
