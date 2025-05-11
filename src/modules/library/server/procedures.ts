@@ -97,12 +97,35 @@ export const libraryRouter = createTRPCRouter({
         }
       })
 
+      const dataWithSummarizedReviews = await Promise.all(
+        productsData.docs.map(async (doc) => {                                // Se mapean todos los productos
+          const reviewsData = await ctx.db.find({                             // y por cada producto se busca un documento en la colección reviews
+            collection: "reviews",
+            pagination: false,
+            where: {
+              product: {
+                equals: doc.id,
+              },
+            },
+          })
+
+          return {
+            ...doc,                                                           // Se devuelven los productos con reviews
+            reviewCount: reviewsData.totalDocs,                               // el número de reviews para este producto y
+            reviewRating:                                                     // la media de las ratings de los reviews
+              reviewsData.docs.length === 0
+                ? 0
+                : reviewsData.docs.reduce((acc, review) => acc + review.rating, 0) / reviewsData.totalDocs
+          }
+        })
+      )
+
       return {
-        ...productsData,
-        docs: productsData.docs.map((doc) => ({
+        ...productsData,                                                      // Se devuelven los datos de los productos de las ordenes
+        docs: dataWithSummarizedReviews.map((doc) => ({                       // y se sobrescribe la prop docs con los datos de las reviews
           ...doc,
-          image: doc.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
-          tenant: doc.tenant as Tenant & { image: Media | null },   // Aseguramos que la propiedad tenant sea de tipo Tenant
+          image: doc.image as Media | null,                                   // Aseguramos que la propiedad image sea de tipo Media
+          tenant: doc.tenant as Tenant & { image: Media | null },             // Aseguramos que la propiedad tenant sea de tipo Tenant
           
         }))
       }
