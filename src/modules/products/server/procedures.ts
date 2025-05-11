@@ -52,11 +52,56 @@ export const productsRouter = createTRPCRouter({
         isPurchased = !!ordersData.docs[0];                // Si se encontró una orden con el producto y el usuario, se marca como comprado
       }
 
+      const reviews = await ctx.db.find({                                    // Se buscan los reviews del producto
+        collection: "reviews",
+        pagination: false,
+        where: {
+          product: {
+            equals: input.id,
+          }
+        }
+      });
+
+      const reviewRating =                                                     // Se calcula la media de las ratings de los reviews
+        reviews.docs.length > 0
+          ? reviews.docs.reduce((acc, review) => acc + review.rating, 0) / reviews.totalDocs
+          : 0;
+
+      const ratingDistribution: Record<number, number> = {                     // Se inicializa un objeto para contar cuántas reseñas hay para cada nivel de estrella (de 1 a 5).
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0
+      };
+
+      if(reviews.totalDocs > 0){                                                // Si existen reseñas para el producto
+        reviews.docs.forEach((review) => {                                      // se itera sobre cada una de ellas
+          const rating = review.rating;                                         // se extrae su puntuación 
+          
+          if(rating >= 1 && rating <=5){                                        // si la puntuación es entre 1 y 5
+            ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1; // se incrementa el contador correspondiente
+          }
+        })
+
+        Object.keys(ratingDistribution).forEach((key) => {                      // Transformamos el objeto ratingDistribution {5: 10, 4: 5, 3: 2, 2: 1, 1: 0}                    
+          const rating = Number(key);                                           // En cada iteración se accede a la clave rating (5, 4, etc)                         
+          const count =ratingDistribution[rating] || 0;                         // Se accede al valor almacenado en ratingDistribution[rating] o 0 si no existe
+          ratingDistribution[rating] = Math.round(                              // Se calcula y actualiza el porcentaje de reseñas para ese nivel de estrella
+            (count / reviews.totalDocs) * 100
+          )
+        })
+      }
+    
+
       return {
         ...product,
-        isPurchased,                                                  // Se agrega la propiedad isPurchased
-        image: product.image as Media | null,                         // Aseguramos que la propiedad image sea de tipo Media
-        tenant: product.tenant as Tenant & { image: Media | null },   // Aseguramos que el campo tenant añadida por el plugin multitenant sea de tipo Tenant y su propiedad image sea de tipo Media
+        isPurchased,                                                            // Se agrega la propiedad isPurchased
+        image: product.image as Media | null,                                   // Aseguramos que la propiedad image sea de tipo Media
+        tenant: product.tenant as Tenant & { image: Media | null },             // Aseguramos que el campo tenant añadida por el plugin multitenant sea de tipo Tenant y su propiedad image sea de tipo Media
+        reviewRating,
+        reviewCount: reviews.totalDocs,
+        ratingDistribution,
       }
     }),
   
