@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { tenantsArrayField } from '@payloadcms/plugin-multi-tenant/fields'
+import { isSuperAdmin } from '@/lib/access'
 
 
 // En una colección de Payload, Payload automáticamente te agrega todos los campos necesarios para manejar la autenticación
@@ -13,23 +14,34 @@ const defaultTenantsArrayField = tenantsArrayField({  // Crea una configuración
   tenantsArrayTenantFieldName: "tenant",              // Nombre del campo que se añadirá a cada elemento del campo "tenants"
   arrayFieldAccess: {
     read: () => true,
-    create: () => true,
-    update: () => true,
+    create: ({ req }) => isSuperAdmin(req.user),
+    update: ({ req }) => isSuperAdmin(req.user),
   },
   tenantFieldAccess: {
     read: () => true,
-    create: () => true,
-    update: () => true,
+    create: ({ req }) => isSuperAdmin(req.user),
+    update: ({ req }) => isSuperAdmin(req.user),
   },
 })
 
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  access: {
+    read: () => true,
+    create: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user),
+    update: ({ req, id }) => {
+      if (isSuperAdmin(req.user)) return true;
+
+      return req.user?.id === id
+    },
+  },
   admin: {
     useAsTitle: 'email',
+    hidden: ({ user }) => !isSuperAdmin(user),          // El boton de crear nuevo usuario estará oculto para los usuarios que no sean superadmin
   },
-  auth: true, // ← esto activa la autenticación y el manejo de tokens
+  auth: true,                                           // ← esto activa la autenticación y el manejo de tokens
   fields: [
     {
       name: "username",
@@ -39,13 +51,16 @@ export const Users: CollectionConfig = {
     },
     {
       admin: {
-        position: "sidebar"                      // Le dice a Payload que coloque este campo "roles" en la barra lateral (sidebar) de la pantalla de edición de usuarios, en lugar de en el área principal del formulario. 
+        position: "sidebar"                             // Le dice a Payload que coloque este campo "roles" en la barra lateral (sidebar) de la pantalla de edición de usuarios, en lugar de en el área principal del formulario. 
       },
       name: "roles",
       type: "select",
       defaultValue: ["user"],
-      hasMany: true,                             // Un mismo usuario puede tener múltiples roles
-      options: ["super-admin", "user"]
+      hasMany: true,                                    // Un mismo usuario puede tener múltiples roles
+      options: ["super-admin", "user"],
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user),    // Solo los superadmins pueden actualizar los roles
+      },
     },
     {
       ...defaultTenantsArrayField,                      // Spread de la configuración del campo "tenants"

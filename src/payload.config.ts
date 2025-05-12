@@ -21,6 +21,7 @@ import { Tags } from './collections/Tags'
 import { Tenants } from './collections/Tenants'
 import { Orders } from './collections/Orders'
 import { Reviews } from './collections/Reviews'
+import { isSuperAdmin } from './lib/access'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -51,7 +52,7 @@ export default buildConfig({
       tenantsArrayField: {             // Configura cómo se vinculan los usuarios a los tenants              
         includeDefaultField: false,    // No añadir automáticamente un campo 'tenants' a la colección Users
       },
-      userHasAccessToAllTenants: (user) => Boolean(user?.roles?.includes("super-admin"))  // Define quién tiene acceso a TODOS los tenants
+      userHasAccessToAllTenants: (user) => isSuperAdmin(user) // Define quién tiene acceso a TODOS los tenants
     })
     // storage-adapter-placeholder
   ],
