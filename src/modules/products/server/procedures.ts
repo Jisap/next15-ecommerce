@@ -23,7 +23,10 @@ export const productsRouter = createTRPCRouter({
       const product = await ctx.db.findByID({
         collection: "products",
         id: input.id,
-        depth: 2, // load product.image, product.tenant & product.tenant.image
+        depth: 2,                                          // load product.image, product.tenant & product.tenant.image
+        select: {                                          // Se excluye el campo "content" de la consulta
+          content: false,
+        }
       });
 
       let isPurchased = false;                             // Por defecto el producto no se ha comprado
@@ -211,6 +214,9 @@ export const productsRouter = createTRPCRouter({
         sort,
         page: input.cursor,
         limit: input.limit,
+        select: {                                                   // Se excluye el campo "content" de la consulta
+          content: false,
+        }
       });
 
       const dataWithSummarizedReviews = await Promise.all(

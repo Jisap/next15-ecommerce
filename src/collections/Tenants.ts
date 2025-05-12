@@ -30,6 +30,9 @@ export const Tenants: CollectionConfig = {
       index: true,
       required: true,
       unique: true,
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user),
+      },
       admin: {
         description: "This is the subdomain for the store"
       }
@@ -47,7 +50,6 @@ export const Tenants: CollectionConfig = {
         update: ({ req }) => isSuperAdmin(req.user),
       },
       admin: {
-        readOnly: true,
         description: "Stripe Account ID associated with your shop"
       },
     },
@@ -58,7 +60,6 @@ export const Tenants: CollectionConfig = {
         update: ({ req }) => isSuperAdmin(req.user),
       },
       admin: {
-        readOnly: true,
         description: "You cannot create products until you submit your Stripe details"
       }
     },
