@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next15 E-commerce
 
-## Getting Started
+E-commerce multi-tenant construido con Next.js 15, Payload CMS y TypeScript.
 
-First, run the development server:
+## Tabla de Contenidos
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Características](#características)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Módulos Principales](#módulos-principales)
+- [Instalación](#instalación)
+- [Scripts Disponibles](#scripts-disponibles)
+- [Convenciones](#convenciones)
+- [Licencia](#licencia)
+
+---
+
+## Características
+
+- Multi-tenant: Soporta múltiples tiendas (tenants) en una sola plataforma.
+- Gestión de productos, categorías, etiquetas y reseñas.
+- Checkout y órdenes de compra.
+- API modularizada con procedimientos para cada dominio.
+- Tipado estricto con TypeScript y validaciones con Zod.
+- Arquitectura escalable y mantenible.
+
+---
+
+## Estructura del Proyecto
+
+```
+.
+├── src/
+│   ├── app/                # Entrypoint de la app Next.js
+│   ├── modules/            # Módulos de dominio (products, reviews, checkout, etc.)
+│   ├── collections/        # Definiciones de colecciones Payload CMS
+│   ├── lib/                # Utilidades y helpers
+│   ├── constants.ts        # Constantes globales
+│   ├── payload-types.ts    # Tipos generados de Payload CMS
+│   └── seed.ts             # Script para poblar la base de datos
+├── public/                 # Archivos estáticos
+├── package.json
+├── tsconfig.json
+└── next.config.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Módulos Principales
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Products (`src/modules/products`)
+- **Procedures:** Endpoints para obtener productos individuales o múltiples, filtrado por categoría, precio, etiquetas y tenant.
+- **Lógica de reviews:** Calcula promedio de ratings y distribución de estrellas.
+- **Tipado:** Tipos estrictos para productos y parámetros de búsqueda.
 
-## Learn More
+### Reviews (`src/modules/reviews`)
+- **Procedures:** Endpoints para crear y listar reseñas de productos.
+- **Tipado:** Tipos para reseñas y validaciones.
 
-To learn more about Next.js, take a look at the following resources:
+### Checkout (`src/modules/checkout`)
+- **Procedures:** Lógica de compra y procesamiento de órdenes.
+- **Hooks/UI/Store:** Componentes y lógica de frontend para el proceso de checkout.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Tenants, Categories, Tags, Auth, Home
+- Módulos adicionales para gestión de tiendas, categorías, etiquetas, autenticación y página principal.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Instalación
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clona el repositorio:
+   ```bash
+   git clone <repo-url>
+   cd next15-ecommerce
+   ```
+2. Instala dependencias:
+   ```bash
+   npm install
+   ```
+3. Configura variables de entorno según tu base de datos y Payload CMS.
+4. Ejecuta la app:
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Scripts Disponibles
+
+- `npm run dev` — Inicia el servidor de desarrollo.
+- `npm run build` — Compila la aplicación para producción.
+- `npm run start` — Inicia la app en modo producción.
+- `npm run seed` — Pobla la base de datos con datos de ejemplo.
+
+---
+
+## Convenciones
+
+- **TypeScript** para todo el código.
+- **Zod** para validaciones de entrada/salida.
+- **TRPC** para procedimientos y endpoints.
+- **Payload CMS** como backend headless.
+
+---
+
+## Licencia
+
+MIT
