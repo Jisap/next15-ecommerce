@@ -5,7 +5,6 @@ import type { CollectionConfig } from 'payload';
 export const Products: CollectionConfig = {
   slug: 'products',
   access: {
-    read: () => true,
     create: ({ req }) => {
       if(isSuperAdmin(req.user)) return true;                    // Solo un super-admin puede crear productos
 
