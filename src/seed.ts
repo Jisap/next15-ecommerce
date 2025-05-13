@@ -1,5 +1,6 @@
 import { getPayload } from "payload"
 import config from "@payload-config"
+import { stripe } from "./lib/stripe";
 
 // He tenido que modificar el proceso de seeding porque el script no me funcionaba.
 // Para ello he tenido que instalar dotenv-cli y tsx.
@@ -147,6 +148,10 @@ const seed = async () => {
 
   const payload = await getPayload({ config });
 
+  const adminAccount = await stripe.accounts.create({}); // Nueva cuenta de Stripe para el admin
+
+
+
   // --- Limpieza de usuarios "super-admin" ---
   try {
     console.log('Deleting users with role "super-admin"...');
@@ -191,7 +196,7 @@ const seed = async () => {
     data: {
       name: "admin",
       slug: "admin",
-      stripeAccountId: "admin",
+      stripeAccountId: adminAccount.id, // Se asigna el ID de la cuenta de Stripe del admin 
     }
   })
 
