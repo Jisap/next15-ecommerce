@@ -1,21 +1,22 @@
 import { isSuperAdmin } from '@/lib/access';
 import { Tenant } from '@/payload-types';
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig, User } from 'payload';
 
 export const Products: CollectionConfig = {
   slug: 'products',
   access: {
-    create: ({ req }) => {
-      if(isSuperAdmin(req.user)) return true;                    // Solo un super-admin puede crear productos
+    create: async({ req }) => {
+      if(isSuperAdmin(req.user as User)) return true;            // Solo un super-admin puede crear productos
 
       const tenant = req.user?.tenants?.[0]?.tenant as Tenant;   // Si no es Super Admin, obtener el 'tenant' (tienda) asociado al usuario
-      
+      //console.log("TENANT", tenant)
       return Boolean(tenant?.stripeDetailsSubmitted)             // Permitir la creación solo si el 'tenant' ha enviado sus detalles de Stripe (TODO)
     }
   },
   admin: {
-    useAsTitle: 'name',  // Solo un super-admin puede leer el campo  'name' de cada producto, los usuarios normales no ->  
-  },                     // Cuando se crea una order el usuario no podra leer en name del producto en el dashboard (untitled) pero si el super-admin
+    useAsTitle: 'name',  // Solo un super-admin puede leer el campo  'name' de cada producto, los usuarios normales no ->  Cuando se crea una order el usuario no podra leer en name del producto en el dashboard (untitled) pero si el super-admin
+    description: "You must verfify your account before creating products",
+  },                     
   fields: [
     {
       name: "name",

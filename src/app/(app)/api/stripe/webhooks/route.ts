@@ -7,6 +7,7 @@ import { ExpandedLineItem } from "@/modules/checkout/types";
 
 
 export async function POST(req: Request) {                                           // Endpoint para manejar los webhooks de Stripe
+  
   let event: Stripe.Event;
 
   try {
@@ -15,6 +16,7 @@ export async function POST(req: Request) {                                      
       req.headers.get("stripe-signature") as string,
       process.env.STRIPE_WEBHOOK_SECRET as string,
     );
+  
   } catch (error) {                                                                  // Manejo de errores durante la verificación de la firma
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
@@ -34,6 +36,7 @@ export async function POST(req: Request) {                                      
 
   const permittedEvents: string[] = [                                                // Lista de eventos de Stripe que este webhook manejará
     "checkout.session.completed",
+    "account.updated",
   ]
 
   const payload = await getPayload({ config })                                       // Inicializa Payload CMS para interactuar con la base de datos
@@ -88,6 +91,24 @@ export async function POST(req: Request) {                                      
           }
 
           break;
+
+        case "account.updated":
+          data = event.data.object as Stripe.Account;
+
+          const updateResult = await payload.update({
+            collection: "tenants",
+            where: {
+              stripeAccountId: {
+                equals: data.id
+              },
+            },
+            data: {
+              stripeDetailsSubmitted: data.details_submitted
+            }
+          });
+         
+          break;
+
         default:
           throw new Error(`Unhandled event: ${event.type}`)                          // Maneja cualquier evento no esperado que haya pasado el filtro inicial
       }

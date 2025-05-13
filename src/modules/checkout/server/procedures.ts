@@ -9,6 +9,43 @@ import { stripe } from "@/lib/stripe";
 
 
 export const checkoutRouter = createTRPCRouter({
+
+  verify: protectedProcedure
+    .mutation(async({ ctx }) => {
+      const user = await ctx.db.findByID({
+        collection: "users",
+        id: ctx.session.user.id, 
+        depth: 0, // user.tenants[0].tenant Al ser depth:0 no se recupera el documento entero sino solo el ID de ese documento
+      })
+
+      if(!user){
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      }
+
+      const tenantId = user.tenants?.[0]?.tenant as string;
+      
+      const tenant = await ctx.db.findByID({
+        collection: "tenants",
+        id: tenantId
+      });
+
+      if(!tenant){
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
+      }
+
+      const accountLink = await stripe.accountLinks.create({
+        account: tenant.stripeAccountId,
+        refresh_url: `${process.env.NEXT_PUBLIC_APP_URL!}/admin`,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL!}/admin`,
+        type: "account_onboarding",
+      });
+
+      if(!accountLink){
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Failed to create verification link" });
+      }
+
+      return { url: accountLink.url }                                // Sirve para que el tenant (vendedor) configure y verifique su cuenta de Stripe para poder operar en el marketplace (vender productos y recibir pagos).
+    }),
   
   purchase: protectedProcedure                                       // Procedimiento 'purchase': maneja la lógica de compra de productos.
     .input (
