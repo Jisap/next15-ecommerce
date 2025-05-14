@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
 import { CheckoutMetadata, ProductMetadata } from "../types";
 import { stripe } from "@/lib/stripe";
+import { PLATFORM_FEE_PERCENTAGE } from "@/constants";
 
 
 export const checkoutRouter = createTRPCRouter({
@@ -78,24 +79,26 @@ export const checkoutRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
       }
 
-      const tenantsData = await ctx.db.find({                         // Se buscan los datos del tenant
-        collection: "tenants",
-        limit: 1,
-        pagination: false,
-        where: {
-          slug: {
-            equals: input.tenantSlug
+      const tenantsData = await ctx.db.find({                         // Inicia una búsqueda en la base de datos utilizando el cliente de Payload (ctx.db).
+        collection: "tenants",                                        // Especifica que la búsqueda se realizará en la colección "tenants". 
+        limit: 1,                                                     // Limita el número de documentos devueltos a 1, ya que se espera encontrar como máximo un tenant con un slug específico.
+        pagination: false,                                            // Desactiva la paginación para esta consulta, ya que solo se necesita el primer resultado.
+        where: {                                                      // Define las condiciones para la búsqueda.
+          slug: {                                                     // Filtra los documentos por el campo "slug".
+            equals: input.tenantSlug                                  // Busca un tenant cuyo "slug" sea igual al valor de input.tenantSlug (el slug proporcionado en la entrada del procedimiento).                               
           }
         }
       })
 
-      const tenant = tenantsData.docs[0];
+      const tenant = tenantsData.docs[0];                             // Accede al primer documento (y se asume que único) del array 'docs' devuelto por la consulta.     
 
       if(!tenant){
         throw new TRPCError({ code: "BAD_REQUEST", message: "Tenant not found" });
       }
 
-      // TODO: throw error if stripe details are not submitted
+      if(!tenant.stripeDetailsSubmitted){
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Tenant no allowed to sell products" });
+      }
 
       const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =       // Se preparán los "line items" para la session de checkout de Stripe. Cada "line item" representa un producto en el carrito de Stripe.
         products.docs.map((product) => ({                                     // Se mapea cada producto a un objeto de lineItem de Stripe
@@ -113,7 +116,16 @@ export const checkoutRouter = createTRPCRouter({
               } as ProductMetadata
             }
           }
-        }))
+        }));
+
+      const totalAmount = products.docs.reduce(
+        (acc, item) => acc + item.price * 100,
+        0
+      );
+
+      const platformFeeAmount = Math.round(
+        totalAmount * PLATFORM_FEE_PERCENTAGE / 100
+      )
 
       const checkout = await stripe.checkout.sessions.create({                  // Se crea la session de checkout en Stripe
         customer_email: ctx.session.user.email,
@@ -126,8 +138,13 @@ export const checkoutRouter = createTRPCRouter({
         },
         metadata: {
           userId: ctx.session.user.id
-        } as CheckoutMetadata
-      })
+        } as CheckoutMetadata,
+        payment_intent_data: {
+          application_fee_amount: platformFeeAmount
+        }
+      },{
+        stripeAccount: tenant.stripeAccountId,
+      });
 
       // Se verifica si Stripe devolvió una URL de checkout.
       if(!checkout.url){

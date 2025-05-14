@@ -65,8 +65,9 @@ export async function POST(req: Request) {                                      
           }
 
           const expandedSession = await stripe.checkout.sessions.retrieve(            // Recupera la sesión de checkout expandiendo los line_items para obtener detalles del producto   
-            data.id,
-            { expand: ["line_items.data.price.product"] }
+            data.id,                                                                      // data.id es el id de la session de checkout que se completo
+            { expand: ["line_items.data.price.product"] },                                // metadatos de los productos que se compraron
+            { stripeAccount: event.account }                                              // contiene el id de la cuenta conectada de stripe (stripeAccountId del tenant para el que se completo el pago)
           )
 
           if(
@@ -83,6 +84,7 @@ export async function POST(req: Request) {                                      
               collection: "orders",
               data: {
                 stripeCheckoutSessionId: data.id,
+                stripeAccountId: event.account,
                 user: user.id,
                 product: item.price.product.metadata.id,
                 name: item.price.product.name,
