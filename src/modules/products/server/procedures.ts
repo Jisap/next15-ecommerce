@@ -6,6 +6,7 @@ import { z } from "zod";
 import { sortValues } from "../search-params";
 import { DEFAULT_LIMIT } from "@/constants";
 import { headers as getHeaders } from "next/headers";
+import { TRPCError } from "@trpc/server";
 
 
 export const productsRouter = createTRPCRouter({
@@ -28,6 +29,13 @@ export const productsRouter = createTRPCRouter({
           content: false,
         }
       });
+
+      if(product.isArchived){
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        })
+      }
 
       let isPurchased = false;                             // Por defecto el producto no se ha comprado
 
@@ -124,7 +132,12 @@ export const productsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {               
-      const where: Where = {};                       // Inicializa un objeto vacío para construir las condiciones de búsqueda
+      const where: Where = {                         // Selecciona los productos donde el campo isArchived no sea igual a true". 
+        isArchived: {
+          not_equals: true,
+        },
+      };  
+
       let sort: Sort = "-createdAt";                 // Inicializa un objeto vacío para construir el orden de los productos
 
       if(input.sort === "curated"){
