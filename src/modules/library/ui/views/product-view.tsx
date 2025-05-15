@@ -19,8 +19,9 @@ const ProductView = ({ productId }: Props) => {
   const { data } = useSuspenseQuery(trpc.library.getOne.queryOptions({
     productId
   }))
- console.log("data.image", data.image)
-  const imageObject = data.image && typeof data.image === 'object' ? data.image : null;
+ 
+  const imageObject = data.image && typeof data.image === 'object' ? data.image : null; // Si el campo image es un objeto, devolverlo, sino devolver null
+  
   return (
     <div className="min-h-screen bg-white">
       <nav className="p-4 bg-[#F4F4F0] w-full border-b">
