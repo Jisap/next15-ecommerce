@@ -5,6 +5,8 @@ import { ArrowLeftIcon } from "lucide-react"
 import { useTRPC } from "@/app/trpc/client"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ReviewSidebar } from "../components/review-sidebar"
+import { RichText } from "@payloadcms/richtext-lexical/react"
+import Image from "next/image"
 
 
 interface Props {
@@ -17,7 +19,8 @@ const ProductView = ({ productId }: Props) => {
   const { data } = useSuspenseQuery(trpc.library.getOne.queryOptions({
     productId
   }))
- 
+ console.log("data.image", data.image)
+  const imageObject = data.image && typeof data.image === 'object' ? data.image : null;
   return (
     <div className="min-h-screen bg-white">
       <nav className="p-4 bg-[#F4F4F0] w-full border-b">
@@ -42,15 +45,26 @@ const ProductView = ({ productId }: Props) => {
           </div>
 
           <div className="lg:col-span-5">
-            {data.content ? (
-              <p>
-                {data.content}
-              </p>
-            ) : (
-              <p className="font-medium italic text-muted-foreground">
-                No special content
-              </p>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="order-2 md:order-1">
+                {data.content ? (  
+                  <RichText data={data.content} />    
+                ) : (
+                  <p className="font-medium italic text-muted-foreground">
+                    No special content
+                  </p>
+                )}
+              </div>
+              
+              <div className="relative order-1 md:order-2 aspect-square">
+                <Image 
+                  src={imageObject?.url || "/placeholder.png"}
+                  alt={imageObject?.alt || data.name}
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>

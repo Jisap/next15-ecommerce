@@ -13,6 +13,8 @@ import { Fragment, useState } from 'react';
 //import { CartButton } from '../ui/components/cart-button';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
+import { RichText } from '@payloadcms/richtext-lexical/react'
+
 
 // Se usa dynamic con ssr: false para componentes que dependen de estado o APIs exclusivas del navegador 
 // (como localStorage a través de useCart) durante su renderizado inicial. Esto evita que el servidor intente 
@@ -123,7 +125,7 @@ export const ProductView = ({ productId, tenantSlug }: ProductViewProps) => {
             {/* description */}
             <div className='p-6'>
               {data.description ? (
-                <p>{data.description}</p>
+                <RichText data={data.description} />
               ) : (
                 <p className='font-medium text-muted-foreground italic'>
                   No description provided
