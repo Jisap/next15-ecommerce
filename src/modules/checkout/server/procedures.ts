@@ -70,6 +70,11 @@ export const checkoutRouter = createTRPCRouter({
               "tenant.slug": {                                       // y cuyo tenantSlug coincida con el de la lista de compra (input.tenantSlug)
                 equals: input.tenantSlug
               }
+            },
+            {
+              isArchived: {                                          // y que no estén marcados como archivados
+                not_equals: true,
+              }
             }
           ]
         }
@@ -168,9 +173,18 @@ export const checkoutRouter = createTRPCRouter({
         collection: "products",                                     // Se busca en la colección "products"
         depth: 2,                                                   // populate de "category", "image" & "tenant" & "tenant.image"
         where: {                                                  
-          id: {
-            in: input.ids
-          }
+          and: [
+            {
+              id: {
+                in: input.ids
+              },
+            },
+            {
+              isArchived: {
+                not_equals: true,
+              }
+            }
+          ]
         },
       });
 
