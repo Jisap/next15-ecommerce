@@ -74,6 +74,15 @@ export const Products: CollectionConfig = {
       admin: {
         description: "Check if you want to hide this product"
       }
-    }
+    },
+    {
+      name: "isPrivate",
+      label: "Private",
+      defaultValue: false,
+      type: "checkbox",  // Implica que es un valor booleano
+      admin: {
+        description: "If checked, the product will not be shown on the public storefront"
+      }
+    },
   ]
 }

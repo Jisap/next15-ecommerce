@@ -174,7 +174,11 @@ export const productsRouter = createTRPCRouter({
         where["tenant.slug"] = {
           equals: input.tenantSlug
         }
-      }                          
+      } else {                                         // Si no se proporciona un slug de tienda se muestran los productos que son públicos excluyendo a los privados
+        where["isPrivate"] = {                         // Esto provocará que en "/" solo se muestren los productos públicos y en la del tenant/slug todos los productos públicos y privados
+          not_equals: true,
+        }
+      }                         
 
       if (input.category) {                            // Si se proporciona un slug de categoría, construye filtros basados en la jerarquía de categorías
         const categoriesData = await ctx.db.find({                 // 1. Busca la categoría específica por su slug
