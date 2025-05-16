@@ -6,7 +6,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function generateTenantURL(tenantSlug: string) {
-  return `/tenants/${tenantSlug}`;
+
+  if(process.env.NODE_ENV === "development") {                        // development http://localhost:3000/tenants/jisap
+    return `/tenants/${tenantSlug}`;
+  };
+
+  const protocol = "https";
+  const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN!;
+
+  return `${protocol}://${tenantSlug}.${domain}`;                     // production https://jisap.funroad.com
 }
 
 export const formatCurrency = (value: number | string) => {
