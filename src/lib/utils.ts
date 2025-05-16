@@ -9,7 +9,7 @@ export function generateTenantURL(tenantSlug: string) {
 
   // In developmed mode use normal routing
   if(process.env.NODE_ENV === "development") {                        // development http://localhost:3000/tenants/jisap
-    return `/tenants/${tenantSlug}`;
+    return `${process.env.NEXT_PUBLIC_APP_URL}/tenants/${tenantSlug}`;
   };
 
   const protocol = "https";
