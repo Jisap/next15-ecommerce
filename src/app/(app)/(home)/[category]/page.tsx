@@ -6,7 +6,7 @@ import { ProductListView } from "@/modules/products/views/product-list-view";
 import { DEFAULT_LIMIT } from "@/constants";
 
 
-
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{

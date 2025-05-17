@@ -5,6 +5,7 @@ import { ProductListView } from "@/modules/products/views/product-list-view";
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { SearchParams } from "nuqs";
 
+export const dynamic = "force-dynamic";
 
 interface Props {
   searchParams: Promise<SearchParams>;

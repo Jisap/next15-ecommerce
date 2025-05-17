@@ -2,6 +2,8 @@ import { getQueryClient, trpc } from '@/app/trpc/server';
 import ProductView from '@/modules/library/ui/views/product-view';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{
     productId: string
