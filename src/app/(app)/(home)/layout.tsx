@@ -4,7 +4,7 @@ import Footer from "../../../modules/home/ui/components/Footer";
 import { Navbar } from "../../../modules/home/ui/components/Navbar";
 import { SearchFilters, SearchFiltersLoading } from "../../../modules/home/ui/components/search-filter";
 
-import { getQueryClient, HydrateClient, trpc } from '@/app/trpc/server';
+import { getQueryClient, trpc } from '@/app/trpc/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 

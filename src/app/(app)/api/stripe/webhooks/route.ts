@@ -97,7 +97,7 @@ export async function POST(req: Request) {                                      
         case "account.updated":
           data = event.data.object as Stripe.Account;
 
-          const updateResult = await payload.update({
+          await payload.update({
             collection: "tenants",
             where: {
               stripeAccountId: {

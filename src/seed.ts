@@ -7,6 +7,7 @@ import { stripe } from "./lib/stripe";
 // tsx Ejecuta directamente tu archivo TypeScript (src/seed.ts), manejando la compilación y la ejecución en un entorno de Módulos ES ("type": "module") de forma sencilla. También resuelve los alias de ruta (como @payload-config) definidos en tu tsconfig.json.
 // dotenv-cli Carga las variables de entorno definidas en tu archivo .env (como PAYLOAD_SECRET y la conexión a la base de datos) y las hace disponibles para el proceso que ejecuta a continuación.
 
+type MongoError = { code: number; message: string };
 
 const categories = [
   {
@@ -163,8 +164,12 @@ const seed = async () => {
     } else {
       console.warn('Could not get native DB connection to delete super-admin users.');
     }
-  } catch (error: any) {
-    console.error('Error deleting super-admin users:', error);
+  } catch (error: unknown) {
+    if (typeof error === "object" && error !== null && "message" in error) {
+      console.error('Error deleting super-admin users:', (error as { message: string }).message);
+    } else {
+      console.error('Error deleting super-admin users:', error);
+    }
     throw error;
   }
   // --- Fin limpieza ---
@@ -180,9 +185,22 @@ const seed = async () => {
     } else {
       console.warn('Could not get native DB connection to drop tenants collection.');
     }
-  } catch (error: any) {
-    if (error.code === 26 || error.message.includes('ns not found')) {
-      console.log('Tenants collection did not exist, skipping drop.');
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      "message" in error &&
+      typeof (error as MongoError).code === "number" &&
+      typeof (error as MongoError).message === "string"
+    ) {
+      const mongoError = error as MongoError;
+      if (mongoError.code === 26 || mongoError.message.includes('ns not found')) {
+        console.log('Tenants collection did not exist, skipping drop.');
+      } else {
+        console.error('Error dropping tenants collection:', error);
+        throw error;
+      }
     } else {
       console.error('Error dropping tenants collection:', error);
       throw error;
@@ -243,21 +261,31 @@ const seed = async () => {
       // 6. Advierte si no se pudo obtener la conexión nativa.
       console.warn('Could not get native DB connection to drop collection.');
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // 7. Captura cualquier error que ocurra durante el intento de eliminación.
 
     // 8. Comprueba específicamente si el error es porque la colección no existía.
     //    MongoDB devuelve el código 26 ('NamespaceNotFound') en este caso.
     //    Si la colección no existía, no es un error real para nosotros,
     //    simplemente significa que no había nada que eliminar.
-    if (error.code === 26 || error.message.includes('ns not found')) {
-      console.log('Categories collection did not exist, skipping drop.');
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      "message" in error &&
+      typeof (error as MongoError).code === "number" &&
+      typeof (error as MongoError).message === "string"
+    ) {
+      const mongoError = error as MongoError;
+      if (mongoError.code === 26 || mongoError.message.includes('ns not found')) {
+        console.log('Categories collection did not exist, skipping drop.');
+      } else {
+        console.error('Error dropping categories collection:', error);
+        throw error;
+      }
     } else {
-      // 9. Si es cualquier otro error (problema de permisos, de conexión, etc.),
-      //    lo muestra en consola y lo vuelve a lanzar para detener el script,
-      //    ya que es un problema inesperado que debe ser investigado.
       console.error('Error dropping categories collection:', error);
-      throw error; // Detiene la ejecución del script si el error no es esperado
+      throw error;
     }
   }
   // --- Fin del bloque de limpieza ---

@@ -11,7 +11,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTRPC } from "@/app/trpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { CategoriesGetManyOutput, CategoriesGetManyOutputSingle } from "@/modules/categories/types";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
 
 interface Props {

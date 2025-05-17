@@ -13,7 +13,7 @@ const UseDropdownPosition = (
 
     // Intenta colocar el dropdown debajo del elemento
     let left = rect.left + window.scrollX;                      // Calcula la posición horizontal (left) y vertical (top) tomando en cuenta el scroll de la página  
-    let top = rect.bottom + window.scrollY;                     // para posicionar correctamente el dropdown justo debajo del elemento.
+    const top = rect.bottom + window.scrollY;                     // para posicionar correctamente el dropdown justo debajo del elemento.
 
     // Si se sale por la derecha, moverlo hacia la izquierda
     if (left + dropdownWidth > window.innerWidth) {             // Si el dropdown se sale del lado derecho:

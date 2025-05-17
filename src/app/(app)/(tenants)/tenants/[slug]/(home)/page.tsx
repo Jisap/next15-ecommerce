@@ -1,4 +1,4 @@
-import { getQueryClient, HydrateClient, trpc } from "@/app/trpc/server";
+import { getQueryClient, trpc } from "@/app/trpc/server";
 import { DEFAULT_LIMIT } from "@/constants";
 import { loadProductFilters } from "@/modules/products/search-params";
 import { ProductListView } from "@/modules/products/views/product-list-view";

@@ -1,5 +1,5 @@
 import { Button, Link } from "@payloadcms/ui";
-import Stripe from 'stripe';
+
 
 export const StripeVerify = () => {
   return (

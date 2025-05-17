@@ -12,7 +12,7 @@ const Page = () => {
     onSuccess: (data) => {                                                      // procedure checkout.verify -> data.url en stripe -> rellenamos los datos que nos pidan ->
       window.location.href = data.url                                           // striped emite el evento "account.updated" y nuestro webhook lo recibe -> 
     },                                                                          // actualiza en la coleccion tenants el stripeAccountId -> lo cual permite crear productos al tenant
-    onError: (error) => {
+    onError: () => {
       window.location.href = "/"
     }
   }));

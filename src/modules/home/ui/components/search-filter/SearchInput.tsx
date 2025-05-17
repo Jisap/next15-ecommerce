@@ -1,7 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input";
-import { BookmarkCheckIcon, List, ListFilterIcon, SearchIcon } from "lucide-react";
+import { BookmarkCheckIcon, ListFilterIcon, SearchIcon } from "lucide-react";
 import CategoriesSidebar from "./categories-sidebar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";

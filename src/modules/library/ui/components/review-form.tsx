@@ -15,12 +15,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
 } from "@/components/ui/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { create } from "domain";
-import { Review } from '../../../../payload-types';
+
  
 interface Props {
   productId: string;
@@ -180,7 +178,7 @@ export const ReviewFormSkeleton = () => {
         size="lg"
         className="bg-black text-white hover:bg-pink-400 hover:text-primary w-fit"
       >
-        "Post review
+        Post review
       </Button> 
     </div>
   )
