@@ -14,9 +14,9 @@ export const generateAuthCookie = async ({ prefix, value }: Props) => {
     value: value,
     httpOnly: true,
     path: "/",
-    // sameSite: "none",                                                     // This breaks the login flow (debug in chapter 31)
-    // domain: process.env.NEXT_PUBLIC_ROOT_DOMAIN,
-    // secure: process.env.NODE_ENV === "production",
+    sameSite: "none",                                                        // This breaks the login flow (debug in chapter 31)
+    domain: process.env.NEXT_PUBLIC_ROOT_DOMAIN,
+    secure: process.env.NODE_ENV === "production",
   })
 
 }
