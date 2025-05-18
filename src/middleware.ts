@@ -22,6 +22,7 @@ export const config = {
 // reescribir la URL para que Next.js pueda servir la página o la ruta de la API.
 
 export default function middleware(req: NextRequest) {
+  
   const url = req.nextUrl;                                                                  // URL original de la petición
 
   const hostname = req.headers.get("host") || "";                                           // extract the host name: ("jisap.funroad.com" or "jisap.localhost:3000")
