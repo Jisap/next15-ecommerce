@@ -5,6 +5,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import sharp from 'sharp'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 
@@ -56,7 +57,14 @@ export default buildConfig({
         includeDefaultField: false,    // No añadir automáticamente un campo 'tenants' a la colección Users
       },
       userHasAccessToAllTenants: (user) => isSuperAdmin(user) // Define quién tiene acceso a TODOS los tenants
+    }),
+    vercelBlobStorage({
+      enabled: true,
+      clientUploads: true,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN
     })
-    // storage-adapter-placeholder
   ],
 })
