@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import Footer from "../../../modules/home/ui/components/Footer";
 import { Navbar } from "../../../modules/home/ui/components/Navbar";
@@ -7,14 +6,11 @@ import { SearchFilters, SearchFiltersLoading } from "../../../modules/home/ui/co
 import { getQueryClient, trpc } from '@/app/trpc/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-
-
 interface Props {
   children: React.ReactNode;
 }
 
 const Layout = async ({ children }: Props) => {
-
   const queryClient = getQueryClient();      // Instancia de QueryClient
   void queryClient.prefetchQuery(
     trpc.categories.getMany.queryOptions()   // Prefetch de datos en el router categories que llama al procedimiento getMany
@@ -28,10 +24,12 @@ const Layout = async ({ children }: Props) => {
         <Suspense fallback={<SearchFiltersLoading />}>
           <SearchFilters />
         </Suspense>
+        <div className="flex-1 bg-[#f4f4f0]">
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
+        </div>
       </HydrationBoundary>
-      <div className="flex-1 bg-[#f4f4f0]">
-        {children}
-      </div>
       <Footer />
     </div>
   )
