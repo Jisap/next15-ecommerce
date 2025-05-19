@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCReactProvider } from "../trpc/client";
 import { Toaster } from "sonner";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { Suspense } from "react";
 
 const dmSans = DM_Sans({
   subsets: ["latin"]
@@ -26,7 +27,9 @@ export default function RootLayout({
       >
         <NuqsAdapter>
           <TRPCReactProvider>
-            {children}
+            <Suspense fallback={<div>Loading...</div>}>
+              {children}
+            </Suspense>
             <Toaster />
           </TRPCReactProvider>
         </NuqsAdapter>
