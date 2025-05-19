@@ -119,6 +119,7 @@ export const productsRouter = createTRPCRouter({
   getMany: baseProcedure
     .input(
       z.object({
+        search: z.string().nullable().optional(),                // Texto de búsqueda
         // Define los parámetros de entrada para filtrar productos y paginar
         cursor: z.number().default(1),                
         limit: z.number().default(DEFAULT_LIMIT),
@@ -223,7 +224,13 @@ export const productsRouter = createTRPCRouter({
           in: input.tags
         }
       }
-      
+
+      if(input.search){                                             // Si se proporciona un texto de búsqueda, crea un filtro para buscar productos por el "name" del producto
+        where["name"] = {
+          like: input.search
+        }
+      }
+
       const data = await ctx.db.find({                              // 5. Realiza la consulta final para obtener los productos filtrados
         collection: "products",                                     // Se busca en la colección "products"
         depth: 2,                                                   // Se hace populate de "category", "image" & "tenant" & "tenant.image"

@@ -3,6 +3,11 @@ import { useQueryStates, parseAsString, parseAsArrayOf, parseAsStringLiteral } f
 const sortValues = ['curated', 'trending', 'hot_and_new'] as const;
 
 const params = {
+  search: parseAsString                      // parseAsString indica a nuqs que trate como string "?search=.."
+    .withOptions({
+      clearOnDefault: true,                  // Si el valor por defecto es vacío, se borra la cadena de consulta
+    })
+    .withDefault(''),                        // Si no se especifica ningún valor, se devuelve el valor por defecto
   sort: parseAsStringLiteral(sortValues)     // parseAsStringLiteral indica a nuqs que trate como string "?sort=.." 
     .withDefault('curated'),                 
   minPrice: parseAsString                    // parseAsString indica a nuqs que trate como string "?minPrice=.."       
