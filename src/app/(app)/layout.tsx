@@ -27,6 +27,7 @@ export default function RootLayout({
       >
         <NuqsAdapter>
           <TRPCReactProvider>
+            {/* Solución al problema del deployment "useSearchParams should be wrapped in a suspense boundary" */}
             <Suspense fallback={<div>Loading...</div>}>
               {children}
             </Suspense>

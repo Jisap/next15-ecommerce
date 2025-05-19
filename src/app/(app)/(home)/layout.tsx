@@ -25,6 +25,7 @@ const Layout = async ({ children }: Props) => {
           <SearchFilters />
         </Suspense>
         <div className="flex-1 bg-[#f4f4f0]">
+          {/* Solución al problema del deployment "useSearchParams should be wrapped in a suspense boundary" */}
           <Suspense fallback={<div>Loading...</div>}>
             {children}
           </Suspense>

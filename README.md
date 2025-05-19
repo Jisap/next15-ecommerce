@@ -167,6 +167,78 @@ Cada módulo en `src/modules` encapsula la lógica de un dominio específico del
 - **Nombres de Archivos y Carpetas:** Generalmente en `kebab-case`. Componentes React en `PascalCase`.
 - **Estilo de Código:** Se recomienda seguir las configuraciones de ESLint y Prettier del proyecto para mantener la consistencia.
 
+## Estructura de Suspense
+
+El proyecto implementa una estructura de Suspense para manejar correctamente la hidratación del lado del cliente y los estados de carga. Esta estructura es especialmente importante cuando se utilizan hooks del lado del cliente como `useSearchParams` o bibliotecas como `nuqs`.
+
+### Layouts y Suspense
+
+1. **Layout Principal** (`src/app/(app)/layout.tsx`):
+```tsx
+<NuqsAdapter>
+  <TRPCReactProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      {children}
+    </Suspense>
+    <Toaster />
+  </TRPCReactProvider>
+</NuqsAdapter>
+```
+
+2. **Layout de Home** (`src/app/(app)/(home)/layout.tsx`):
+```tsx
+<HydrationBoundary state={dehydrate(queryClient)}>   
+  <Suspense fallback={<SearchFiltersLoading />}>
+    <SearchFilters />
+  </Suspense>
+  <div className="flex-1 bg-[#f4f4f0]">
+    <Suspense fallback={<div>Loading...</div>}>
+      {children}
+    </Suspense>
+  </div>
+</HydrationBoundary>
+```
+
+### Cuándo usar Suspense
+
+El componente `Suspense` debe ser utilizado cuando:
+
+1. Se utilizan hooks del lado del cliente que requieren Suspense:
+   - `useSearchParams()`
+   - `useRouter()`
+   - Hooks de `nuqs`
+   - Cualquier hook que maneje estado del cliente y necesite hidratación
+
+2. Se realizan operaciones asíncronas en el cliente que necesitan un estado de carga
+
+### Ejemplos de Uso
+
+```tsx
+// No necesita Suspense (componente estático)
+const StaticPage = () => {
+  return <div>Página estática</div>
+}
+
+// Necesita Suspense (usa useSearchParams)
+const SearchPage = () => {
+  const searchParams = useSearchParams()
+  return <div>Búsqueda: {searchParams.get('q')}</div>
+}
+```
+
+### Consideraciones Importantes
+
+1. **Jerarquía de Providers**: Mantener el orden correcto de los providers es crucial:
+   - `NuqsAdapter` debe estar en el nivel más alto
+   - `TRPCReactProvider` debe envolver el contenido que use TRPC
+   - `Suspense` debe envolver el contenido que use hooks del cliente
+
+2. **Fallbacks**: Cada `Suspense` debe tener un fallback apropiado que se muestre durante la carga:
+   - Componentes de carga específicos para cada sección
+   - Estados de carga que reflejen la estructura del contenido
+
+3. **Hidratación**: El `HydrationBoundary` de React Query debe estar correctamente posicionado para manejar el estado del servidor al cliente.
+
 ---
 
 ## Licencia
