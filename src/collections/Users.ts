@@ -41,7 +41,15 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     hidden: ({ user }) => !isSuperAdmin(user),          // El boton de crear nuevo usuario estará oculto para los usuarios que no sean superadmin
   },
-  auth: true,                                           // ← esto activa la autenticación y el manejo de tokens
+  auth: {                                                    // ← esto activa la autenticación y el manejo de tokens
+    cookies: {
+      ...(process.env.NODE_ENV !== "development" && {
+        sameSite: "None",
+        domain: process.env.NEXT_PUBLIC_ROOT_DOMAIN,
+        secure: true,
+      }),
+    }
+  },                                           
   fields: [
     {
       name: "username",
