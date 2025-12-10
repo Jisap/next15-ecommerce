@@ -241,6 +241,8 @@ const SearchPage = () => {
 
 ---
 
+**Nota:** Si estás utilizando MongoDB Atlas en la capa gratuita (M0), ten en cuenta que tu clúster se pausará automáticamente después de 30 días de inactividad. Si encuentras errores de conexión al iniciar el proyecto, verifica en el panel de MongoDB Atlas que el clúster no esté en pausa y reanúdalo si es necesario. [cite: ]
+
 ## Licencia
 
 MIT
